@@ -1,0 +1,109 @@
+# Copyright (c) 1998 Sandia Corporation. Under the terms of Contract
+# DE-AC04-94AL85000 with Sandia Corporation, the U.S. Governement
+# retains certain rights in this software.
+# 
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are
+# met:
+# 
+#     * Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+# 
+#     * Redistributions in binary form must reproduce the above
+#       copyright notice, this list of conditions and the following
+#       disclaimer in the documentation and/or other materials provided
+#       with the distribution.  
+# 
+#     * Neither the name of Sandia Corporation nor the names of its
+#       contributors may be used to endorse or promote products derived
+#       from this software without specific prior written permission.
+# 
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+# A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+# OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+# LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+# THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# 
+
+#
+# Makefile for fortran interface test program
+#
+NE_LIB_CSRC =	ne_jack.c
+
+NE_LIB_M4SRC = ne_jack.src
+
+NE_TEST_INC = ne_test.inc
+
+NE_TEST_SRC = ne_test.f
+
+LIB_NAME = libnemIfor.a
+
+#NET_PATH   =	/Net/pecos/rf_crew/arch
+NET_PATH   =	/Net/pecos/rf_crew/people/mmstjohn/arch
+
+OS_TYPE = irix
+
+#
+# Global defines
+#
+TEST_NAME=ne_test
+
+INC_PATH = -I$(NET_PATH)/sgi/include
+LIB_PATH = $(NET_PATH)/sgi/lib
+
+DBG_FLAGS = -g -mips2
+OPT_FLAGS = -O2 -mips2
+#DBG_FLAGS = -g
+#OPT_FLAGS = -O
+
+CC  =       cc $(OPT_FLAGS) $(INC_PATH)
+#CC  =       pgcc -cougar $(OPT_FLAGS) $(INC_PATH)
+FC  =       f77 $(DBG_FLAGS) $(INC_PATH)
+RANLIB =    touch
+
+OBJ_FILES =	$(NE_LIB_CSRC:.c=.o)
+AR  =	ar r
+
+DEFS =	-DEX_ERR_STR
+
+#
+# Link libraries for the test program
+#
+LNK_LIBS = -L. -lnemIfor -L$(LIB_PATH) -lnemIc -lexoIIv2for \
+           -lexoIIc -lnetcdf
+
+%.o:	%.c
+	@echo "Compiling $<..."
+	$(CC) $(DEFS) -c $<
+
+%.o:	%.f
+	@echo "Compiling $<..."
+	$(FC) $(DEFS) -c $<
+
+$(NE_LIB_CSRC):	$(NE_LIB_M4SRC) fortc1.sed fortc2.sed common.m4 $(OS_TYPE).m4
+		@echo "Creating $<..."
+		@./fortc -L . -O $(OS_TYPE) ne_jack.src > $@
+
+$(LIB_NAME):	$(OBJ_FILES)
+		@echo "creating library..."
+		@$(AR) $(LIB_NAME) $(OBJ_FILES)
+		@$(RANLIB) $(LIB_NAME)
+
+$(TEST_NAME).o:	$(NE_TEST_SRC) $(NE_TEST_INC)
+		@echo "Compiling test program..."
+		$(FC) $(DEFS) -c $(NE_TEST_SRC)
+
+$(TEST_NAME):	$(TEST_NAME).o $(LIB_NAME)
+		@echo "Linking test program..."
+		$(FC) $(DEFS) $(TEST_NAME).o -o $(TEST_NAME) $(LNK_LIBS)
+
+lib:	$(LIB_NAME)
+
+clean::
+	rm -f *.o *.nemI ne_jack.c
