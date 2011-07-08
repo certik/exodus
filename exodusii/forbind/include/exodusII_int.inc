@@ -9,6 +9,16 @@ C*****************************************************************************
 C
 C EXODUSII_INT - exodus II internals include file
 C
+C author - Victor R. Yarberry, Sandia National Laboratories
+C
+C environment - UNIX F77
+C
+C revision history - 
+C
+C  Based on original written by Lynn Clements (RE/SPEC)
+C
+C  $Id: exodusII_int.inc,v 1.8 2008/07/24 21:40:41 gdsjaar Exp $
+C
 C*****************************************************************************
 C  --
 C  --  This file contains define constants that are used to refer to

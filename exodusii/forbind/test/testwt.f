@@ -3,13 +3,6 @@ c
 c This is a test program for the Fortran binding of the EXODUS II
 c database write routines.
 c
-
-c	history - 
-c	Original L.A. Schoof
-c	02/25/93 V.R. Yarberry - Added error checks for file creation.
-c	03/04/93 V.R. Yarberry - Fixed bug in expvtt test, ebids was not passed 
-c	08/31/93 VRY - updated to match API version 2.00
-c
       include 'exodusII.inc'
 
       integer iin, iout
@@ -66,7 +59,6 @@ c
       num_elem_blk = 5
       num_node_sets = 2
       num_side_sets = 5
-
       call expini (exoid, "This is a test", num_dim, num_nodes, 
      1             num_elem, num_elem_blk, num_node_sets, 
      2             num_side_sets, ierr)
@@ -970,7 +962,6 @@ c
          call exit (0)
       endif
 
-
 c write results variables parameters and names
 
       num_glo_vars = 1
@@ -1156,3 +1147,4 @@ c
 
       stop
       end
+

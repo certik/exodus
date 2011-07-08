@@ -455,25 +455,14 @@ itos(ints, dims, ndims)
 %      )
 % {
 
-#if defined(EXODUS_STRING_LENGTH_WARNING)
-  char errmsg[MAX_ERR_LENGTH];
-#endif
     int slen;
     char* name;
 
     *ierr = 0;
-    /* WARNING: titlelen SHOULD be MAX_LINE_LENGTH, but may not be depending
-                on how the Fortran programmer passed it. It is best at
-                this time to hard code it per EXPINI spec. */
     slen = MAX_LINE_LENGTH;      /* max line size */
     if (titlelen != MAX_LINE_LENGTH)
     {
       slen = titlelen;
-#if defined(EXODUS_STRING_LENGTH_WARNING)
-      sprintf(errmsg,"Warning: title string length is %d in file id %d\n",
-              titlelen, *idexo);
-      ex_err("expini",errmsg,EX_MSG);
-#endif
     }
 
     name = malloc((slen + 1)*sizeof(char));
@@ -502,25 +491,14 @@ itos(ints, dims, ndims)
 %      )
 % {
 
-#if defined(EXODUS_STRING_LENGTH_WARNING)
-  char errmsg[MAX_ERR_LENGTH];
-#endif
     int slen;
     char* name;
 
     *ierr = 0;
-    /* WARNING: titlelen SHOULD be MAX_LINE_LENGTH, but may not be depending
-                on how the Fortran programmer passed it. It is best at
-                this time to hard code it per EXGINI spec. */
     slen = MAX_LINE_LENGTH;      /* max line size */
     if (titlelen != MAX_LINE_LENGTH)
     {
       slen = titlelen;
-#if defined(EXODUS_STRING_LENGTH_WARNING)
-      sprintf(errmsg,"Warning: title string length is %d in file id %d\n",
-              titlelen, *idexo);
-      ex_err("exgini",errmsg,EX_MSG);
-#endif
     }
 
     name = malloc((slen + 1)*sizeof(char));
@@ -555,20 +533,10 @@ itos(ints, dims, ndims)
 
     *ierr=0;     /* default no errror */
 
-    /** if (exoptval & EX_DEBUG) 
-	  print("[expqa] # of QA records: %d\n",*num_qa_records); **/
-    /* WARNING: qa_recordslen SHOULD be MAX_STR_LENGTH, but may not be depending
-                on how the Fortran programmer passed it. It is best at
-                this time to hard code it per EXPQA spec. */
     slen = MAX_STR_LENGTH;	/* max str size */
     if (qa_recordlen != MAX_STR_LENGTH)
     {
       slen = qa_recordlen;
-#if defined(EXODUS_STRING_LENGTH_WARNING)
-      sprintf(errmsg,"Warning: qa record string length is %d in file id %d\n",
-              qa_recordlen, *idexo);
-      ex_err("expqa",errmsg,EX_MSG);
-#endif
     }
     alen = 4;	/* qa records are 4 strings deep */
 
@@ -605,10 +573,7 @@ itos(ints, dims, ndims)
           return;
         }
         /* copy fortran string into allocated space */
-        /** printf("[expqa] rec #: %d fortran str#: %d, loc: %ld , %8s\n",
-               i,ii,qa_record+iii*slen,qa_record+iii*slen); **/
-        ex_fstrncpy(*(sptr+iii),qa_record+iii*slen,slen);
-        /**printf("[expqa] after ex_fstrncpy: %s\n",*(sptr+iii)); **/
+        ex_fstrncpy(*(sptr+iii),qa_record+iii*qa_recordlen,slen);
         iii++;	/* bump char array pointer */
       }
     }
@@ -653,35 +618,16 @@ itos(ints, dims, ndims)
 
     *ierr=0;     /* default no errror */
 
-    /* WARNING: qa_recordslen SHOULD be MAX_STR_LENGTH, but may not be depending
-                on how the Fortran programmer passed it. It is best at
-                this time to hard code it per EXPQA spec. */
     slen = MAX_STR_LENGTH;      /* max str size */
     if (qa_recordlen != MAX_STR_LENGTH)
     {
       slen = qa_recordlen;
-#if defined(EXODUS_STRING_LENGTH_WARNING)
-      sprintf(errmsg,"Warning: qa record string length is %d in file id %d\n",
-              qa_recordlen, *idexo);
-      ex_err("exgqa",errmsg,EX_MSG);
-#endif
     }
     alen = 4;   /* qa records are 4 strings deep */
 
     /* do ExodusII C call to find out how many qa records are avail */
-    if (ex_inquire
-         (*idexo,EX_INQ_QA,&num_qa_records,&rdummy,cdummy) == EX_FATAL)
-    {
-      *ierr = EX_FATAL;
-      if (exoptval & EX_DEBUG)
-      {
-        sprintf(errmsg,
-               "Error: failed to get number of qa records from file id %d",
-                *idexo);
-        ex_err("exgqa",errmsg,EX_MSG);
-      }
-      return;
-    }
+    num_qa_records = ex_inquire_int(*idexo,EX_INQ_QA);
+
     /** if (exoptval & EX_DEBUG)
 	   print("[exgqa] # of QA records: %d\n",num_qa_records); **/
     /* Allocate space for the QA string ptr array */
@@ -746,10 +692,7 @@ itos(ints, dims, ndims)
       for (ii=0;ii<alen;ii++)
       {
         /* copy fortran string into allocated space */
-        /** printf("[exgqa] rec #: %d C str#: %d, loc: %ld , %-8s\n",
-               i,ii,*(sptr+iii),*(sptr+iii)); **/
-        ex_fcdcpy(qa_record+iii*slen,slen,*(sptr+iii));
-        /** printf("[exgqa] after ex_fstrncpy: %8s\n",qa_record+iii*slen); **/
+        ex_fcdcpy(qa_record+iii*qa_recordlen,slen,*(sptr+iii));
         iii++;  /* bump char array pointer */
       }
     }
@@ -787,20 +730,10 @@ itos(ints, dims, ndims)
     int i,slen;
 
     *ierr=0;     /* default no errror */
-    /** if (exoptval & EX_DEBUG) 
-	  printf("[expinf] # of info records: %d\n",*num_info); **/
-    /* WARNING: infolen SHOULD be MAX_LINE_LENGTH, but may not be depending
-                on how the Fortran programmer passed it. It is best at
-                this time to hard code it per EXPINF spec. */
     slen = MAX_LINE_LENGTH;	/* max str size */
     if (infolen != MAX_LINE_LENGTH)
     {
       slen = infolen;
-#if defined(EXODUS_STRING_LENGTH_WARNING)
-      sprintf(errmsg,"Warning: info record length is %d in file id %d\n",
-              infolen, *idexo);
-      ex_err("expinf",errmsg,EX_MSG);
-#endif
     }
 
 
@@ -836,8 +769,7 @@ itos(ints, dims, ndims)
     for (i=0;i<*num_info;i++)
     {
       *(aptr+i) = sptr+i*(slen+1);		/* put address into ptr array */
-      ex_fstrncpy(*(aptr+i),info+i*slen,slen);	/* copy string into buffer */
-      /* printf("[expinf] rec: %d , %s\n",i,*(aptr+i));  */
+      ex_fstrncpy(*(aptr+i),info+i*infolen,slen);	/* copy string into buffer */
     }
     *(aptr+i) = 0; /* null out last ptr */
     if (ex_put_info(*idexo,*num_info,aptr) == EX_FATAL)
@@ -883,33 +815,12 @@ itos(ints, dims, ndims)
     *ierr=0;     /* default no errror */
 
     /* do exodusII C call to find out how many info records are avail */
-    if (ex_inquire(*idexo,EX_INQ_INFO,&num_info,&fdummy,cdummy) == EX_FATAL)
-    {
-      *ierr = EX_FATAL;
-      if (exoptval & EX_DEBUG)
-      {
-        sprintf(errmsg,
-               "Error: failed to get number of info records from file id %d",
-                *idexo);
-        ex_err("exginf",errmsg,EX_MSG);
-      }
-      return;
-    }
-    /** if (exoptval & EX_DEBUG) 
-	  printf("[exginf] # of info records: %d\n",num_info); **/
+    num_info = ex_inquire_int(*idexo,EX_INQ_INFO);
 
-    /* WARNING: infolen SHOULD be MAX_LINE_LENGTH, but may not be depending
-                on how the Fortran programmer passed it. It is best at
-                this time to hard code it per EXGINF spec. */
     slen = MAX_LINE_LENGTH;	/* max str size */
     if (infolen != MAX_LINE_LENGTH)
     {
       slen = infolen;
-#if defined(EXODUS_STRING_LENGTH_WARNING)
-      sprintf(errmsg,"Warning: info record length is %d in file id %d\n",
-              infolen, *idexo);
-      ex_err("exginf",errmsg,EX_MSG);
-#endif
     }
 
     /* Step 1: Allocate space for string ptr array
@@ -968,7 +879,7 @@ itos(ints, dims, ndims)
 
     for (i=0;i<num_info;i++) /* Copy Fortran info records to staging space */
     {
-      ex_fcdcpy(info+i*slen,slen,*(aptr+i));	/* copy string into buffer */
+      ex_fcdcpy(info+i*infolen,slen,*(aptr+i));	/* copy string into buffer */
       /** printf("[exginf] rec: %d , %s\n",i,*(aptr+i)); **/
     }
 
@@ -1062,33 +973,13 @@ itos(ints, dims, ndims)
 
     *ierr=0;     /* default no errror */
 
-/**    printf("[expcon] ID: %d, len: %d\n",*idexo,coord_nameslen); **/
-    /* WARNING: coord_nameslen SHOULD be MAX_STR_LENGTH, but may not be
-                depending on how the Fortran programmer passed it. It is best at
-                this time to hard code it per EXPCON spec. */
-    slen = MAX_STR_LENGTH; /* max str size */
-    if (coord_nameslen != MAX_STR_LENGTH)
+    slen = ex_inquire_int(*idexo, EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH);	/* max str size */
+    if (coord_nameslen < slen)
     {
       slen = coord_nameslen;
-#if defined(EXODUS_STRING_LENGTH_WARNING)
-      sprintf(errmsg,"Warning: coord name string length is %d in file id %d\n",
-              coord_nameslen, *idexo);
-      ex_err("expcon",errmsg,EX_MSG);
-#endif
     }
     /* do ExodusII C call to find out how many dimensions  */
-    if (ex_inquire(*idexo,EX_INQ_DIM,&ndim,&fdummy,cdummy) == EX_FATAL)
-    {
-      *ierr = EX_FATAL;
-      if (exoptval & EX_DEBUG)
-      {
-        sprintf(errmsg,
-               "Error: failed to get number of dimensions from file id %d",
-                *idexo);
-        ex_err("expcon",errmsg,EX_MSG);
-      }
-      return;
-    }
+    ndim = ex_inquire_int(*idexo,EX_INQ_DIM);
 
     /* Allocate space for the name ptr array */
     if (!(aptr=malloc((ndim+1)*sizeof(char *))))
@@ -1124,11 +1015,8 @@ itos(ints, dims, ndims)
     for (i=0;i<ndim;i++)
     {
       *(aptr+i) = sptr+i*(slen+1);
-    /* copy fortran string into allocated space */
-      /* nstrncpy(*(aptr+i),coord_names+i*slen,slen); */
-      ex_fstrncpy(*(aptr+i),coord_names+i*slen,slen);
-    /**printf("[expcon] str#: %d,target: %ld, source: %ld, len: %d\n",
-           i,*(aptr+i),coord_names+i*slen,slen); **/
+      /* copy fortran string into allocated space */
+      ex_fstrncpy(*(aptr+i),coord_names+i*coord_nameslen,slen);
     }
     *(aptr+i) = 0; /* set last pointer to null */
 
@@ -1173,30 +1061,14 @@ itos(ints, dims, ndims)
 
     /** if (exoptval & EX_DEBUG)
       printf("[exgcon] Fortran target loc: %ld\n",coord_names); **/
-    slen = MAX_STR_LENGTH; /* max string size */
-    if (coord_nameslen != MAX_STR_LENGTH)
+    slen = ex_max_name_length; /* max string size */
+    if (coord_nameslen < slen)
     {
       slen = coord_nameslen;
-#if defined(EXODUS_STRING_LENGTH_WARNING)
-      sprintf(errmsg,"Warning: coord name string length is %d in file id %d\n",
-              coord_nameslen, *idexo);
-      ex_err("exgcon",errmsg,EX_MSG);
-#endif
     }
 
     /* do ExodusII C call to find out how many dimensions */
-    if (ex_inquire(*idexo,EX_INQ_DIM,&ndim,&fdummy,cdummy) == EX_FATAL)
-    {
-      *ierr = EX_FATAL;
-      if (exoptval & EX_DEBUG)
-      {
-        sprintf(errmsg,
-               "Error: failed to get number of dimensions from file id %d",
-                *idexo);
-        ex_err("exgcon",errmsg,EX_MSG);
-      }
-      return;
-    }
+    ndim = ex_inquire_int(*idexo,EX_INQ_DIM);
 
     /* allocate memory to stage the coordinate name ptrs into */
     if (!(aptr = malloc((ndim+1)*sizeof(char *))))
@@ -1255,11 +1127,12 @@ itos(ints, dims, ndims)
     }
 
     /* copy C strings to Fortran arrays */
+    memset(coord_names, 0, ndim*coord_nameslen);
     for (i=0;i<ndim;i++)
     {
       if (exoptval & EX_DEBUG)
         printf("[exgcon] name(%d): %s\n",i,*(aptr+i));
-      ex_fcdcpy(coord_names+i*slen,slen,*(aptr+i)); /* copy and blank fill */
+      ex_fcdcpy(coord_names+i*coord_nameslen,slen,*(aptr+i)); /* copy and blank fill */
     }
 
     free(sptr);        /* Free up string buffer space */
@@ -1353,32 +1226,12 @@ itos(ints, dims, ndims)
 
     *ierr = 0; /* default no error */
 
-    if (ex_inquire(*idexo,EX_INQ_ELEM_BLK,&num_elem_blk,&fdummy,cdummy) == EX_FATAL)
-    {
-      *ierr = EX_FATAL;
-      if (exoptval & EX_DEBUG)
-      {
-        sprintf(errmsg,
-               "Error: failed to get number of sides sets for file id %d",
-                *idexo);
-        ex_err("expcss",errmsg,EX_MSG);
-      }
-      return;
-    }
+    num_elem_blk = ex_inquire_int(*idexo,EX_INQ_ELEM_BLK);
 
-    /* WARNING: elem_typelen SHOULD be MAX_STR_LENGTH, but may not be depending
-                on how the Fortran programmer passed it. It is best at
-                this time to hard code it per EXPCLB spec. */
     slen = MAX_STR_LENGTH;     /* max str size */
     if (elem_typelen != MAX_STR_LENGTH)
     {
       slen = elem_typelen;
-#if defined(EXODUS_STRING_LENGTH_WARNING)
-      sprintf(errmsg,
-             "Warning: element type string length is %d in file id %d\n",
-              elem_typelen, *idexo);
-      ex_err("expclb",errmsg,EX_MSG);
-#endif
     }
 
 
@@ -1414,7 +1267,7 @@ itos(ints, dims, ndims)
     for (i=0;i<num_elem_blk;i++)
     {
       *(aptr+i) = sptr+i*(slen+1);		/* put address into ptr array */
-      ex_fstrncpy(*(aptr+i),elem_type+i*slen,slen);/* copy string into buffer */
+      ex_fstrncpy(*(aptr+i),elem_type+i*elem_typelen,slen);/* copy string into buffer */
     }
     *(aptr+i) = 0; /* null out last ptr */
 
@@ -1458,19 +1311,10 @@ itos(ints, dims, ndims)
 
     *ierr = 0; /* default no error */
 
-    /* WARNING: elem_typelen SHOULD be MAX_STR_LENGTH, but may not be depending
-                on how the Fortran programmer passed it. It is best at
-                this time to hard code it per EXPELB spec. */
     slen = MAX_STR_LENGTH;     /* max str size */
     if (elem_typelen != MAX_STR_LENGTH)
     {
       slen = elem_typelen;
-#if defined(EXODUS_STRING_LENGTH_WARNING)
-      sprintf(errmsg,
-             "Warning: element type string length is %d in file id %d\n",
-              elem_typelen, *idexo);
-      ex_err("expelb",errmsg,EX_MSG);
-#endif
     }
 
 
@@ -1493,7 +1337,6 @@ itos(ints, dims, ndims)
     }
 
     /* Copy element type names from Fortran array to staging area */
-    /* nstrncpy(sptr,elem_type,slen); */
     ex_fstrncpy(sptr,elem_type,slen);
 
     if (ex_put_elem_block (*idexo, *elem_blk_id, sptr, *num_elem_this_blk,
@@ -1537,19 +1380,10 @@ itos(ints, dims, ndims)
 
     *ierr = 0;
 
-    /* WARNING: elem_typelen SHOULD be MAX_STR_LENGTH, but may not be depending
-                on how the Fortran programmer passed it. It is best at
-                this time to hard code it per EXGELB spec. */
     slen = MAX_STR_LENGTH;     /* max str size */
     if (elem_typelen != MAX_STR_LENGTH)
     {
       slen = elem_typelen;
-#if defined(EXODUS_STRING_LENGTH_WARNING)
-      sprintf(errmsg,
-             "Warning: element type string length is %d in file id %d\n",
-              elem_typelen, *idexo);
-      ex_err("exgelb",errmsg,EX_MSG);
-#endif
     }
 
     /* allocate memory to stage the element type names into */
@@ -1580,6 +1414,7 @@ itos(ints, dims, ndims)
       return;
     }
     /* Copy element type name from staging area to Fortran array */
+    memset(elem_type, 0, elem_typelen);
     ex_fcdcpy (elem_type, slen, sptr);
 /*    cstra2fstra(sptr,elem_type,elem_typelen,num_elem_this_blk); */
     free(sptr);
@@ -1826,19 +1661,10 @@ itos(ints, dims, ndims)
 
     *ierr=0;     /* default no errror */
 
-    /* WARNING: nameslen SHOULD be MAX_STR_LENGTH, but may not be depending
-                on how the Fortran programmer passed it. It is best at
-                this time to hard code it per EXGVAN spec. */
-    slen = MAX_STR_LENGTH;	/* max str size */
-    if (nameslen != MAX_STR_LENGTH)
+    slen = ex_max_name_length;	/* max str size */
+    if (nameslen < slen)
     {
       slen = nameslen;
-#if defined(EXODUS_STRING_LENGTH_WARNING)
-      sprintf(errmsg,
-             "Warning: variable names string length is %d in file id %d\n",
-              nameslen, *idexo);
-      ex_err("exgean",errmsg,EX_MSG);
-#endif
     }
 
     /* allocate memory to for pointer array */
@@ -1888,9 +1714,10 @@ itos(ints, dims, ndims)
       }
     }
     /* Copy Fortran names from staging space */
+    memset(names, 0, *num_attr*nameslen);
     for (i=0;i<*num_attr;i++)
     {
-	ex_fcdcpy(names+i*slen,slen,*(aptr+i));/* copy str into Fortran buffer */
+	ex_fcdcpy(names+i*nameslen,slen,*(aptr+i));/* copy str into Fortran buffer */
     }
 
     free(sptr);	/* Free up string staging area */
@@ -1919,19 +1746,10 @@ itos(ints, dims, ndims)
 
     *ierr=0;     /* default no errror */
 
-    /* WARNING: nameslen SHOULD be MAX_STR_LENGTH, but may not be depending
-                on how the Fortran programmer passed it. It is best at
-                this time to hard code it per EXGVAN spec. */
-    slen = MAX_STR_LENGTH;	/* max str size */
-    if (nameslen != MAX_STR_LENGTH)
+    slen = ex_inquire_int(*idexo, EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH);	/* max str size */
+    if (nameslen < slen)
     {
       slen = nameslen;
-#if defined(EXODUS_STRING_LENGTH_WARNING)
-      sprintf(errmsg,
-             "Warning: variable names string length is %d in file id %d\n",
-              nameslen, *idexo);
-      ex_err("expean",errmsg,EX_MSG);
-#endif
     }
 
     /* allocate memory to for pointer array */
@@ -1967,7 +1785,7 @@ itos(ints, dims, ndims)
     for (i=0;i<*num_attr;i++)
     {
       *(aptr+i) = sptr+i*(slen+1);		/* put address into ptr array */
-      ex_fstrncpy(*(aptr+i),names+i*slen,slen);/* copy string into buffer */
+      ex_fstrncpy(*(aptr+i),names+i*nameslen,slen);/* copy string into buffer */
     }
     *(aptr+i) = 0; /* null out last ptr */
 
@@ -2009,19 +1827,10 @@ itos(ints, dims, ndims)
 
     *ierr=0;     /* default no errror */
 
-    /* WARNING: nameslen SHOULD be MAX_STR_LENGTH, but may not be depending
-                on how the Fortran programmer passed it. It is best at
-                this time to hard code it per EXPVAN spec. */
-    slen = MAX_STR_LENGTH;	/* max str size */
-    if (nameslen != MAX_STR_LENGTH)
+    slen = ex_inquire_int(*idexo, EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH);	/* max str size */
+    if (nameslen < slen)
     {
       slen = nameslen;
-#if defined(EXODUS_STRING_LENGTH_WARNING)
-      sprintf(errmsg,
-             "Warning: variable names string length is %d in file id %d\n",
-              nameslen, *idexo);
-      ex_err("expnams",errmsg,EX_MSG);
-#endif
     }
 
     /* allocate memory for pointer array */
@@ -2056,7 +1865,7 @@ itos(ints, dims, ndims)
     for (i=0;i<*num_obj;i++)
     {
       *(aptr+i) = sptr+i*(slen+1);		/* put address into ptr array */
-      ex_fstrncpy(*(aptr+i),names+i*slen,slen);/* copy string into buffer */
+      ex_fstrncpy(*(aptr+i),names+i*nameslen,slen);/* copy string into buffer */
     }
     *(aptr+i) = 0; /* null out last ptr */
     /* do ExodusII C call to write results variables names */
@@ -2096,19 +1905,10 @@ itos(ints, dims, ndims)
 
     *ierr=0;     /* default no errror */
 
-    /* WARNING: nameslen SHOULD be MAX_STR_LENGTH, but may not be depending
-                on how the Fortran programmer passed it. It is best at
-                this time to hard code it per EXGVAN spec. */
-    slen = MAX_STR_LENGTH;	/* max str size */
-    if (nameslen != MAX_STR_LENGTH)
+    slen = ex_max_name_length;	/* max str size */
+    if (nameslen < slen)
     {
       slen = nameslen;
-#if defined(EXODUS_STRING_LENGTH_WARNING)
-      sprintf(errmsg,
-             "Warning: variable names string length is %d in file id %d\n",
-              nameslen, *idexo);
-      ex_err("exgnams",errmsg,EX_MSG);
-#endif
     }
 
     /* allocate memory to for pointer array */
@@ -2160,9 +1960,10 @@ itos(ints, dims, ndims)
     }
 
     /* Copy Fortran names from staging space */
+    memset(names, 0, *num_obj*nameslen);
     for (i=0;i<*num_obj;i++)
     {
-	ex_fcdcpy(names+i*slen,slen,*(aptr+i));/* copy str into Fortran buffer */
+	ex_fcdcpy(names+i*nameslen,slen,*(aptr+i));/* copy str into Fortran buffer */
     }
 
     free(sptr);	/* Free up string staging area */
@@ -2190,18 +1991,10 @@ itos(ints, dims, ndims)
 
     *ierr = 0;
 
-    /* WARNING: prop_nameslen SHOULD be MAX_STR_LENGTH, but may not be depending                on how the Fortran programmer passed it. It is best at
-                this time to hard code it per EXPPN spec. */
-    slen = MAX_STR_LENGTH;     /* max str size */
-    if (prop_nameslen != MAX_STR_LENGTH)
+    slen = ex_inquire_int(*idexo, EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH);	/* max str size */
+    if (prop_nameslen < slen)
     {
       slen = prop_nameslen;
-#if defined(EXODUS_STRING_LENGTH_WARNING)
-      sprintf(errmsg,
-             "Warning: property names string length is %d in file id %d\n",
-              prop_nameslen, *idexo);
-      ex_err("exppn",errmsg,EX_MSG);
-#endif
     }
 
     /* Allocate space for the name ptr array */
@@ -2240,10 +2033,7 @@ itos(ints, dims, ndims)
     {
       *(aptr+i) = sptr+i*(slen+1);
     /* copy fortran string into allocated space */
-      /* nstrncpy(*(aptr+i),prop_names+i*slen,slen); */
-      ex_fstrncpy(*(aptr+i),prop_names+i*slen,slen);
-    /**printf("[exppn] str#: %d,target: %ld, source: %ld, len: %d\n",
-           i,*(aptr+i),prop_names+i*slen,slen); **/
+      ex_fstrncpy(*(aptr+i),prop_names+i*prop_nameslen,slen);
     }
     *(aptr+i) = 0; /* set last pointer to null */
 
@@ -2289,18 +2079,10 @@ itos(ints, dims, ndims)
 
     *ierr = 0;
 
-    /* WARNING: prop_nameslen SHOULD be MAX_STR_LENGTH, but may not be depending                on how the Fortran programmer passed it. It is best at
-                this time to hard code it per EXPPN spec. */
-    slen = MAX_STR_LENGTH;     /* max str size */
-    if (prop_nameslen != MAX_STR_LENGTH)
+    slen = ex_max_name_length;     /* max str size */
+    if (prop_nameslen < slen)
     {
       slen = prop_nameslen;
-#if defined(EXODUS_STRING_LENGTH_WARNING)
-      sprintf(errmsg,
-             "Warning: property names string length is %d in file id %d\n",
-              prop_nameslen, *idexo);
-      ex_err("exgpn",errmsg,EX_MSG);
-#endif
     }
 
     switch ((ex_entity_type)*obj_type)
@@ -2331,19 +2113,7 @@ itos(ints, dims, ndims)
 
     
     /* do ExodusII C call to find out how many properties */
-    if (ex_inquire(*idexo,inq_code,&num_props,&fdummy,cdummy) == EX_FATAL)
-    {
-      *ierr = EX_FATAL;
-      if (exoptval & EX_DEBUG)
-      {
-        sprintf(errmsg,
-               "Error: failed to get number of properties from file id %d",
-                *idexo);
-        ex_err("exgpn",errmsg,EX_MSG);
-      }
-      return;
-    }
-
+    num_props = ex_inquire_int(*idexo,inq_code);
 
     /* Allocate space for the name ptr array */
     if (!(aptr=malloc((num_props+1)*sizeof(char *))))
@@ -2398,11 +2168,12 @@ itos(ints, dims, ndims)
       return;
     }
     /* copy C strings to Fortran arrays */
+    memset(prop_names, 0, num_props*prop_nameslen);
     for (i=0;i<num_props;i++)
     {
       if (exoptval & EX_DEBUG)
         printf("[exgpn] name(%d): %s\n",i,*(aptr+i));
-      ex_fcdcpy(prop_names+i*slen,slen,*(aptr+i)); /* copy and blank fill */
+      ex_fcdcpy(prop_names+i*prop_nameslen,slen,*(aptr+i)); /* copy and blank fill */
     }
 
     /* Free up the space we used */
@@ -2431,18 +2202,10 @@ itos(ints, dims, ndims)
 
     *ierr = 0;
 
-    /* WARNING: prop_namelen SHOULD be MAX_STR_LENGTH, but may not be depending                on how the Fortran programmer passed it. It is best at
-                this time to hard code it per EXPP spec. */
-    slen = MAX_STR_LENGTH;     /* max str size */
-    if (prop_namelen != MAX_STR_LENGTH)
+    slen = ex_inquire_int(*idexo, EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH);	/* max str size */
+    if (prop_namelen < slen)
     {
       slen = prop_namelen;
-#if defined(EXODUS_STRING_LENGTH_WARNING)
-      sprintf(errmsg,
-             "Warning: property name string length is %d in file id %d\n",
-              prop_namelen, *idexo);
-      ex_err("expp",errmsg,EX_MSG);
-#endif
     }
 
     /* allocate memory to stage the property name into */
@@ -2498,18 +2261,10 @@ itos(ints, dims, ndims)
 
     *ierr = 0;
 
-    /* WARNING: prop_namelen SHOULD be MAX_STR_LENGTH, but may not be depending               on how the Fortran programmer passed it. It is best at
-                this time to hard code it per EXGP spec. */
-    slen = MAX_STR_LENGTH;     /* max str size */
-    if (prop_namelen != MAX_STR_LENGTH)
+    slen = ex_max_name_length;     /* max str size */
+    if (prop_namelen < slen)
     {
       slen = prop_namelen;
-#if defined(EXODUS_STRING_LENGTH_WARNING)
-      sprintf(errmsg,
-             "Warning: property name string length is %d in file id %d\n",
-              prop_namelen, *idexo);
-      ex_err("exgp",errmsg,EX_MSG);
-#endif
     }
 
     /* allocate memory to stage the property name into */
@@ -2526,7 +2281,6 @@ itos(ints, dims, ndims)
     }
 
     /* Copy property name from Fortran string to staging area */
-    /* nstrncpy(sptr,prop_name,slen); */
     ex_fstrncpy(sptr,prop_name,slen);
 
     /* use exodusII C routine to get the property value */
@@ -2565,18 +2319,10 @@ itos(ints, dims, ndims)
 
     *ierr = 0;
 
-    /* WARNING: prop_namelen SHOULD be MAX_STR_LENGTH, but may not be depending              on how the Fortran programmer passed it. It is best at
-                this time to hard code it per EXGP spec. */
-    slen = MAX_STR_LENGTH;     /* max str size */
-    if (prop_namelen != MAX_STR_LENGTH)
+    slen = ex_max_name_length;     /* max str size */
+    if (prop_namelen < slen)
     {
       slen = prop_namelen;
-#if defined(EXODUS_STRING_LENGTH_WARNING)
-      sprintf(errmsg,
-             "Warning: property name string length is %d in file id %d\n",
-              prop_namelen, *idexo);
-      ex_err("exgpa",errmsg,EX_MSG);
-#endif
     }
 
     /* allocate memory to stage the property name into */
@@ -2594,7 +2340,6 @@ itos(ints, dims, ndims)
     memset(sptr, 0, slen+1);
 
     /* Copy property name from Fortran string to staging area */
-    /* nstrncpy(sptr,prop_name,slen); */
     ex_fstrncpy(sptr,prop_name,slen);
 
 
@@ -2634,18 +2379,10 @@ itos(ints, dims, ndims)
 
     *ierr = 0;
 
-    /* WARNING: prop_namelen SHOULD be MAX_STR_LENGTH, but may not be depending             on how the Fortran programmer passed it. It is best at
-                this time to hard code it per EXGP spec. */
-    slen = MAX_STR_LENGTH;     /* max str size */
-    if (prop_namelen != MAX_STR_LENGTH)
+    slen = ex_inquire_int(*idexo, EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH);	/* max str size */
+    if (prop_namelen < slen)
     {
       slen = prop_namelen;
-#if defined(EXODUS_STRING_LENGTH_WARNING)
-      sprintf(errmsg,
-             "Warning: property name string length is %d in file id %d\n",
-              prop_namelen, *idexo);
-      ex_err("exppa",errmsg,EX_MSG);
-#endif
     }
 
     /* allocate memory to stage the property name into */
@@ -2662,7 +2399,6 @@ itos(ints, dims, ndims)
     }
 
     /* Copy property name from Fortran string to staging area */
-    /* nstrncpy(sptr,prop_name,slen); */
     ex_fstrncpy(sptr,prop_name,slen);
 
 
@@ -2921,18 +2657,7 @@ itos(ints, dims, ndims)
 
     *ierr = 0;
 
-    if (ex_inquire(*idexo,EX_INQ_NODE_SETS,&num_node_sets,&fdummy,cdummy) == EX_FATAL)
-    {
-      *ierr = EX_FATAL;
-      if (exoptval & EX_DEBUG)
-      {
-        sprintf(errmsg,
-               "Error: failed to get number of nodes sets for file id %d",
-                *idexo);
-        ex_err("expcns",errmsg,EX_MSG);
-      }
-      return;
-    }
+    num_node_sets = ex_inquire_int(*idexo,EX_INQ_NODE_SETS);
 
     /* allocate memory for C node index array */
     if (!(node_index_ptr=malloc(num_node_sets*sizeof(int))))
@@ -3024,18 +2749,7 @@ itos(ints, dims, ndims)
 
     *ierr = 0;
 
-    if (ex_inquire(*idexo,EX_INQ_NODE_SETS,&num_node_sets,&fdummy,cdummy) == EX_FATAL)
-    {
-      *ierr = EX_FATAL;
-      if (exoptval & EX_DEBUG)
-      {
-        sprintf(errmsg,
-               "Error: failed to get number of node sets for file id %d",
-                *idexo);
-        ex_err("exgcns",errmsg,EX_MSG);
-      }
-      return;
-    }
+    num_node_sets = ex_inquire_int(*idexo,EX_INQ_NODE_SETS);
 
     /* allocate memory for C node  index array */
     if (!(node_index_ptr=malloc(num_node_sets*sizeof(int))))
@@ -3066,16 +2780,10 @@ itos(ints, dims, ndims)
       return;
     }
 
-    /** if (exoptval & EX_DEBUG) 
-	printf("[exgcns] %d node sets defined\n",num_node_sets); **/
-    ex_inquire(*idexo,EX_INQ_NS_NODE_LEN,&i,&fdummy,cdummy);
-    /** if (exoptval & EX_DEBUG) 
-	printf("[exgcns] node set array length: %d\n",i); **/
-
     if (ex_get_concat_node_sets(*idexo,node_set_ids,num_nodes_per_set,
-                                 num_dist_per_set,node_index_ptr,
-                                 dist_index_ptr,node_sets_node_list,
-                                 node_sets_dist_fact) == EX_FATAL)
+				num_dist_per_set,node_index_ptr,
+				dist_index_ptr,node_sets_node_list,
+				node_sets_dist_fact) == EX_FATAL)
     {
       free(node_index_ptr);
       free(dist_index_ptr);
@@ -3089,7 +2797,6 @@ itos(ints, dims, ndims)
       }
       return;
     }
-
 
     for (i=0;i<num_node_sets;i++) /* change from 0-based to 1 index */
     {
@@ -3381,18 +3088,7 @@ itos(ints, dims, ndims)
 
     if (exoptval & EX_DEBUG) printf("[expcss]\n");
 
-    if (ex_inquire(*idexo,EX_INQ_SIDE_SETS,&num_side_sets,&fdummy,cdummy) == EX_FATAL)
-    {
-      *ierr = EX_FATAL;
-      if (exoptval & EX_DEBUG)
-      {
-        sprintf(errmsg,
-               "Error: failed to get number of sides sets for file id %d",
-                *idexo);
-        ex_err("expcss",errmsg,EX_MSG);
-      }
-      return;
-    }
+    num_side_sets = ex_inquire_int(*idexo,EX_INQ_SIDE_SETS);
 
     /* allocate memory for C element index array */
     if (!(elem_index_ptr=malloc(num_side_sets*sizeof(int))))
@@ -3486,18 +3182,7 @@ itos(ints, dims, ndims)
 
     *ierr = 0;
 
-    if (ex_inquire(*idexo,EX_INQ_SIDE_SETS,&num_side_sets,&fdummy,cdummy) == EX_FATAL)
-    {
-      *ierr = EX_FATAL;
-      if (exoptval & EX_DEBUG)
-      {
-        sprintf(errmsg,
-               "Error: failed to get number of sides sets for file id %d",
-                *idexo);
-        ex_err("exgcss",errmsg,EX_MSG);
-      }
-      return;
-    }
+    num_side_sets = ex_inquire_int(*idexo,EX_INQ_SIDE_SETS);
 
     /* allocate memory for C elem index array */
     if (!(elem_index_ptr=malloc(num_side_sets*sizeof(int))))
@@ -3605,18 +3290,7 @@ itos(ints, dims, ndims)
 
     *ierr = 0;
 
-    if (ex_inquire(*idexo,EX_INQ_SIDE_SETS,&num_side_sets,&fdummy,cdummy) == EX_FATAL)
-    {
-      *ierr = EX_FATAL;
-      if (exoptval & EX_DEBUG)
-      {
-        sprintf(errmsg,
-               "Error: failed to get number of sides sets for file id %d",
-                *idexo);
-        ex_err("exgcss",errmsg,EX_MSG);
-      }
-      return;
-    }
+    num_side_sets = ex_inquire_int(*idexo,EX_INQ_SIDE_SETS);
 
     /* allocate memory for C elem index array */
     if (!(elem_index_ptr=malloc(num_side_sets*sizeof(int))))
@@ -3760,22 +3434,10 @@ itos(ints, dims, ndims)
 
     *ierr=0;     /* default no errror */
 
-    /** if (exoptval & EX_DEBUG) 
-	printf("[expvan] # of variable names: %d\n",*num_vars); **/
-
-    /* WARNING: var_nameslen SHOULD be MAX_STR_LENGTH, but may not be depending
-                on how the Fortran programmer passed it. It is best at
-                this time to hard code it per EXPVAN spec. */
-    slen = MAX_STR_LENGTH;	/* max str size */
-    if (var_nameslen != MAX_STR_LENGTH)
+    slen = ex_inquire_int(*idexo, EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH);	/* max str size */
+    if (var_nameslen < slen)
     {
       slen = var_nameslen;
-#if defined(EXODUS_STRING_LENGTH_WARNING)
-      sprintf(errmsg,
-             "Warning: variable names string length is %d in file id %d\n",
-              var_nameslen, *idexo);
-      ex_err("expvan",errmsg,EX_MSG);
-#endif
     }
 
     /* allocate memory for pointer array */
@@ -3810,9 +3472,7 @@ itos(ints, dims, ndims)
     for (i=0;i<*num_vars;i++)
     {
       *(aptr+i) = sptr+i*(slen+1);		/* put address into ptr array */
-      /* nstrncpy(*(aptr+i),var_names+i*slen,slen); */
-      ex_fstrncpy(*(aptr+i),var_names+i*slen,slen);/* copy string into buffer */
-      /** printf("[expvan] var_name(%d): %s\n",i,*(aptr+i)); **/
+      ex_fstrncpy(*(aptr+i),var_names+i*var_nameslen,slen);/* copy string into buffer */
     }
     *(aptr+i) = 0; /* null out last ptr */
     /* do ExodusII C call to write results variables names */
@@ -3858,19 +3518,10 @@ itos(ints, dims, ndims)
     /**if (exoptval & EX_DEBUG) 
 	printf("[exgvan] # of variable names: %d\n",*num_vars); **/
 
-    /* WARNING: var_nameslen SHOULD be MAX_STR_LENGTH, but may not be depending
-                on how the Fortran programmer passed it. It is best at
-                this time to hard code it per EXGVAN spec. */
-    slen = MAX_STR_LENGTH;	/* max str size */
-    if (var_nameslen != MAX_STR_LENGTH)
+    slen = ex_max_name_length;	/* max str size */
+    if (var_nameslen < slen)
     {
       slen = var_nameslen;
-#if defined(EXODUS_STRING_LENGTH_WARNING)
-      sprintf(errmsg,
-             "Warning: variable names string length is %d in file id %d\n",
-              var_nameslen, *idexo);
-      ex_err("exgvan",errmsg,EX_MSG);
-#endif
     }
 
     /* allocate memory to for pointer array */
@@ -3922,10 +3573,11 @@ itos(ints, dims, ndims)
     }
 
     /* Copy Fortran variable names to staging space */
+    memset(var_names, 0, *num_vars*var_nameslen);
     for (i=0;i<*num_vars;i++)
     {
       /** printf("[exgvan] var_name(%d): %s\n",i,*(aptr+i)); **/
-      ex_fcdcpy(var_names+i*slen,slen,*(aptr+i));/* copy str into Fortran buffer */
+      ex_fcdcpy(var_names+i*var_nameslen,slen,*(aptr+i));/* copy str into Fortran buffer */
     }
 
     free(sptr);	/* Free up string staging area */
@@ -4745,18 +4397,7 @@ itos(ints, dims, ndims)
 
     *ierr = 0;
 
-    if (ex_inquire(*idexo,EX_INQ_SIDE_SETS,&num_side_sets,&fdummy,cdummy) == EX_FATAL)
-    {
-      *ierr = EX_FATAL;
-      if (exoptval & EX_DEBUG)
-      {
-        sprintf(errmsg,
-               "Error: failed to get number of sides sets for file id %d",
-                *idexo);
-        ex_err("excn2s",errmsg,EX_MSG);
-      }
-      return;
-    }
+    num_side_sets = ex_inquire_int(*idexo,EX_INQ_SIDE_SETS);
 
     /* allocate memory for C element index array */
     if (!(elem_index_ptr=malloc(num_side_sets*sizeof(int))))
@@ -4902,6 +4543,132 @@ itos(ints, dims, ndims)
     }
 }
 
+/* ex_get_coordinate_frames -- read coordinate frames */
+% void
+% exgfrm (
+%    int  *idexo,
+%    int  *nframeo,
+%    int  *cfids,
+%    real *coord,
+%    int  *tags,
+%    int  *ierr
+%    )
+% {
+  int i;
+  char *ctags = NULL;
+
+  char errmsg[MAX_ERR_LENGTH];
+
+  /* Determine number of coordinate frames stored in file */
+  int nframe = ex_inquire_int(*idexo, EX_INQ_COORD_FRAMES);
+
+  if (nframe != *nframeo) {
+     *ierr = EX_FATAL;
+      if (exoptval & EX_DEBUG) {
+	sprintf(errmsg,
+		"Error: nframe argument (%d) does not match number found on file (%d) from file id %d",
+		*nframeo, nframe, *idexo);
+	ex_err("exgfrm",errmsg,EX_MSG);
+      }
+    return;
+  }
+
+  /* Create array of characters to store tags... */
+  if (nframe > 0) {
+    if (!(ctags = calloc(nframe, sizeof(char)))) {
+      *ierr = EX_MEMFAIL;
+      if (exoptval & EX_DEBUG) {
+	sprintf(errmsg,
+		"Error: failed to allocate space for node index array for file id %d",
+		*idexo);
+	ex_err("exgfrm",errmsg,EX_MEMFAIL);
+      }
+      return;
+    }
+
+    *ierr = 0;
+    
+    if (ex_get_coordinate_frames (*idexo, &nframe, cfids, coord, ctags) == EX_FATAL) {
+      *ierr = EX_FATAL;
+      if (exoptval & EX_DEBUG) {
+	sprintf(errmsg,
+		"Error: failed to get coordinate frames from file id %d",
+		*idexo);
+	ex_err("exgfrm",errmsg,EX_MSG);
+      }
+      return;
+    }
+
+    /* Convert character tags back to integer tags for fortran */
+    for (i = 0; i < nframe; i++) {
+      if (ctags[i] == 'R' || ctags[i] == 'r')
+	tags[i] = EX_CF_RECTANGULAR;
+      else if (ctags[i] == 'C' || ctags[i] == 'c')
+	tags[i] = EX_CF_CYLINDRICAL;
+      else if (ctags[i] == 'S' || ctags[i] == 's')
+	tags[i] = EX_CF_SPHERICAL;
+    }
+    free(ctags);
+  }
+}
+
+/* ex_put_coordinate_frames -- define/write coordinate frames */
+% void
+% expfrm (
+%    int  *idexo,
+%    int  *nframe,
+%    int  *cfids,
+%    real *coord,
+%    int  *tags,
+%    int  *ierr
+%    )
+% {
+  int i;
+  char *ctags = NULL;
+
+  char errmsg[MAX_ERR_LENGTH];
+
+  /* Create array of characters to store tags... */
+  if (*nframe > 0) {
+    if (!(ctags = calloc(*nframe, sizeof(char)))) {
+      *ierr = EX_MEMFAIL;
+      if (exoptval & EX_DEBUG) {
+	sprintf(errmsg,
+		"Error: failed to allocate space for node index array for file id %d",
+		*idexo);
+	ex_err("exgfrm",errmsg,EX_MEMFAIL);
+      }
+      return;
+    }
+
+    /* Convert fortran integer tags to C API character tags */
+    for (i = 0; i < *nframe; i++) {
+      if (tags[i] == EX_CF_RECTANGULAR)
+	ctags[i] = 'R';
+      else if (tags[i] == EX_CF_CYLINDRICAL)
+        ctags[i] = 'C';
+      else if (tags[i] == EX_CF_SPHERICAL)
+        ctags[i] = 'S';
+    }
+
+    *ierr = 0;
+
+    if (ex_put_coordinate_frames (*idexo, *nframe, cfids, coord, ctags) == EX_FATAL) {
+      *ierr = EX_FATAL;
+      if (exoptval & EX_DEBUG) {
+	sprintf(errmsg,
+		"Error: failed to define/write coordinate frames in file id %d",
+		*idexo);
+	ex_err("expfrm",errmsg,EX_MSG);
+      }
+      return;
+    }
+
+    free(ctags);
+  }
+}
+
+
 /* Routine to return floating point word size */
 % int 
 % excpws ()
@@ -4942,8 +4709,6 @@ itos(ints, dims, ndims)
               EX_MEMFAIL);
       return;
     }
-    /* printf("[exerr] called by: %s, msg: %s, msglen: %d\n",
-            pname,err_string,err_stringlen); */
     ex_fstrncpy(proc_name,pname,pnamelen);
     ex_fstrncpy(error_string,err_string,err_stringlen);
     ex_err(proc_name,error_string,*errcode);
@@ -4972,6 +4737,30 @@ itos(ints, dims, ndims)
              "Error: failed to set error reporting option to %d",
               *option_val);
       ex_err("exopts",errmsg,EX_MSG);
+    }
+  }
+}
+
+% void
+% exmxnm (
+%      int *idexo,       /* EXODUS file ID */
+%      int *length,	/* max length of names */
+%      int *ierr        /* error return code */
+%      )
+% {
+
+  char errmsg[MAX_ERR_LENGTH];
+
+  *ierr = ex_set_max_name_length(*idexo, *length);
+  if (*ierr != 0)
+  {
+    *ierr = EX_FATAL;
+    if (exoptval & EX_DEBUG)
+    {
+      sprintf(errmsg,
+             "Error: failed to set maximum name length to %d",
+              *length);
+      ex_err("exmxnm",errmsg,EX_MSG);
     }
   }
 }

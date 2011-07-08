@@ -138,12 +138,12 @@ int main( int argc, char **argv )
   int rank, num_domains;
   int quit=FALSE;
   int loc_num_nodes, loc_num_elems;
-  int *loc_connect;
+  int *loc_connect = NULL;
 
 #ifdef HAVE_PARALLEL
   MPI_Info     mpi_info_object = MPI_INFO_NULL;				/* Copy of MPI Info object.		*/
 #endif
-  int         *elem_map;
+  int         *elem_map                   = NULL;
   int          exodus =                     TRUE;			/* TRUE, perform EXODUS benchmark; FALSE don't */
   int          close_files = FALSE;
   char         file_name[MAX_STRING_LEN] =  DEFAULT_FILE_NAME;		/* Input file name.				*/
@@ -177,9 +177,9 @@ int main( int argc, char **argv )
   char         value[MAX_STRING_LEN];					/* Value of a key/value pair in a MPI Info	*/
 #endif
   /* object.					*/
-  realtyp       *x_coords;
-  realtyp       *y_coords;
-  realtyp       *z_coords;
+  realtyp       *x_coords = NULL;
+  realtyp       *y_coords = NULL;
+  realtyp       *z_coords = NULL;
   int         ndim;
 #ifdef HAVE_PARALLEL
   MPI_Info    new_mpi_info_object;	
@@ -297,7 +297,7 @@ int main( int argc, char **argv )
   }
 
   if ( exodus ) {
-    int         *node_map;
+    int *node_map = NULL;
     if (0 == read_exo_mesh(file_name, rank, &ndim, num_domains, 
 			   &num_nodal_fields, &num_global_fields, &num_element_fields,
 			   &num_timesteps, sleep_time, num_iterations,
@@ -442,7 +442,7 @@ int read_exo_mesh (char *file_name, int rank, int *num_dim, int num_domains,
   struct stat  file_status;  
   size_t glob_file_size;
   size_t glob_raw_data_vol;
-  size_t raw_data_vol;
+  size_t raw_data_vol = 0;
 
   float version;
   realtyp *globals = NULL;
@@ -763,13 +763,13 @@ int write_exo_mesh (char *file_name, int rank, int num_dim, int num_domains, int
   int IO_word_size  = sizeof(realtyp);
   int j, t, npd, err, num_elem_blk, num_node_sets, num_side_sets;
   int iter;
-  int *elem_var_tab;
+  int *elem_var_tab = NULL;
   size_t file_size;
 
   struct stat  file_status; 
   size_t glob_file_size;
   size_t glob_raw_data_vol;
-  size_t raw_data_vol;
+  size_t raw_data_vol = 0;
 
   realtyp *globals = NULL;
 
@@ -787,9 +787,9 @@ int write_exo_mesh (char *file_name, int rank, int num_dim, int num_domains, int
   
   char tmp_name[MAX_STRING_LEN];
   char base_name[MAX_STRING_LEN];
-  char **gvar_name;
-  char **nvar_name;
-  char **evar_name;
+  char **gvar_name = NULL;
+  char **nvar_name = NULL;
+  char **evar_name = NULL;
 
   int *exoid = NULL;
   exoid = malloc(files_per_domain * sizeof(int));

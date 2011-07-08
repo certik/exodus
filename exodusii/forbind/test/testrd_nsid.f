@@ -173,9 +173,53 @@ c
         end if
 60    continue
 
+C ... Test coordinate frames
+      call getfrm(exoid)
+
       call exclos (exoid, ierr)
       write (iout, '(/"after exclos, error = ", i3)' ) ierr
  100  format(' Element ',I3,', Nodes/Element = ',I3,' -- ',20I3)
       stop
       end
 
+      subroutine getfrm(exoid)
+      implicit none
+      include 'exodusII.inc'
+
+      real fdum
+      character*1 cdum
+      integer iout
+
+      integer exoid, ierr, i, j
+      integer numfrm;   ! Assumed to be 3 for remaining dimensions
+      integer cfids(3), tags(3)
+      character*32 ctag
+      real    coord(27)
+
+      data iout /6/
+
+      call exinq(exoid, EXNCF, numfrm, fdum, cdum, ierr)
+      write (iout, '(/"after exinq, error = ", i3)' ) ierr
+      write (iout,
+     1  '(/"There are ",i2," coordinate frames")')
+     2  numfrm
+
+      call exgfrm(exoid, numfrm, cfids, coord, tags, ierr);
+      write (6,'("after exgfrm, error = ", i4)') ierr
+
+! NOTE: These values may not be sensical; just used for testing.
+      do i=0,2
+        if (tags(i+1) .eq. EXCFREC) then
+          ctag = 'RECTANGULAR'
+        else if (tags(i+1) .eq. EXCFCYL) then
+          ctag = 'CYLINDRICAL'
+        else if (tags(i+1) .eq. EXCFSPH) then
+          ctag = 'SPHERICAL'
+        end if
+
+        write (iout, 100) cfids(i+1), ctag, (COORD(9*i+j),j=1,9)
+      end do
+
+ 100  format(i5, 3x, A, 9F10.2)
+      return
+      end

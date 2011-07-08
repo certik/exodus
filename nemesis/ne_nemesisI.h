@@ -42,9 +42,9 @@
  *
  * $Author: gdsjaar $
  *
- * $Date: 2008/02/20 20:26:58 $
+ * $Date: 2008/02/07 13:40:50 $
  *
- * $Revision: 1.2 $
+ * $Revision: 1.17 $
  *
  * $Name:  $
  *====================================================================*/
@@ -61,8 +61,8 @@
 extern "C" {
 #endif
 
-#define NEMESIS_API_VERSION		3.09
-#define NEMESIS_API_VERSION_NODOT	309
+#define NEMESIS_API_VERSION		3.12
+#define NEMESIS_API_VERSION_NODOT	312
 
 /*=============================================================================
  *     Initial Information Routines
@@ -501,9 +501,15 @@ ne_catstr2(char *name,	/* The name to attach num1 and num2 to */
 extern int
 ne_id_lkup(int   neid,		/* NetCDF/Exodus file ID */
            char *var_name,	/* Nemesis variable name */
-           size_t *idx,           /* index variable for variable, length 2 */
+           size_t *idx,         /* index variable for variable, length 2 */
            int   ne_var_id	/* NetCDF variable ID */
            );
+
+extern int
+ne_get_map_status(int neid,
+		  char *stat_var,
+		  int proc_id,
+		  int *stat);
 
 extern int
 ne_put_version(int neid		/* NetCDF/Exodus file ID */

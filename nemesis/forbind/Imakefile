@@ -31,7 +31,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # 
 
-XCOMM $Id: Imakefile,v 1.2 2008/02/20 20:26:59 gdsjaar Exp $
+XCOMM $Id: Imakefile,v 1.31 2005/07/11 18:10:50 gdsjaar Exp $
 
 #if defined CatamountArchitecture
 #define OSystem 	catamount
@@ -59,6 +59,9 @@ XCOMM $Id: Imakefile,v 1.2 2008/02/20 20:26:59 gdsjaar Exp $
 
 #elif defined AIXArchitecture
 #define OSystem              aix
+ 
+#elif defined PPCArchitecture
+#define OSystem              linux
 
 #elif defined InterixArchitecture
 #define OSystem		     interix

@@ -394,3 +394,144 @@ int ne_get_idx(int neid, char *ne_var_name, size_t *index, int pos)
 
   return 1;
 }
+
+int ne_get_proc_count(int neid)
+{
+  int status;
+  int dimid;
+  size_t ltemp;
+  int proc_count = -1;
+
+  if ((status = nc_inq_dimid(neid, DIM_NUM_PROCS, &dimid)) != NC_NOERR) {
+    return (-1);
+  }
+
+  /* Get the value of the number of processors */
+  if ((status = nc_inq_dimlen(neid, dimid, &ltemp)) != NC_NOERR) {
+    return (-1);
+  }
+  proc_count = ltemp;
+  return proc_count;
+}
+
+struct ne_stat_struct {
+  int neid;
+  int *stats;
+  size_t num;
+} ne_stat_struct;
+
+static struct ne_stat_struct *nem_int_e_maps = 0;
+static struct ne_stat_struct *nem_bor_e_maps = 0;
+static struct ne_stat_struct *nem_int_n_maps = 0;
+static struct ne_stat_struct *nem_bor_n_maps = 0;
+static struct ne_stat_struct *nem_ext_n_maps = 0;
+
+int ne_fill_map_status(int neid,
+			char *stat_var,
+			int *stat_array)
+{
+  int status;
+  int varid;
+  char   errmsg[MAX_ERR_LENGTH];
+  char *func_name = "ne_fill_map_status(internal function)";
+  
+  /* Now query the map status and fill the array. */
+  if ((status = nc_inq_varid(neid, stat_var, &varid)) != NC_NOERR) {
+    exerrval = status;
+    sprintf(errmsg,
+	    "Error: failed to find variable ID for \"%s\" from file ID %d",
+	    VAR_INT_N_STAT, neid);
+    ex_err(func_name, errmsg, exerrval);
+    return (EX_FATAL);
+  }
+
+  if ((status = nc_get_var_int(neid, varid, stat_array)) != NC_NOERR) {
+    exerrval = status;
+    sprintf(errmsg,
+	    "Error: failed to get status for \"%s\" from file %d",
+	    VAR_INT_N_STAT, neid);
+    ex_err(func_name, errmsg, exerrval);
+    return (EX_FATAL);
+  }
+  return (EX_NOERR);
+}
+
+int ne_get_map_status(int neid,
+		      char *stat_var,
+		      int proc_id,
+		      int *stat)
+{
+  int  num_procs = 0;
+
+  struct ne_stat_struct *maps = 0;
+  if (strcmp(stat_var, VAR_INT_N_STAT ) == 0) {
+    if (nem_int_n_maps == 0) {
+      nem_int_n_maps = malloc(sizeof(ne_stat_struct));
+      num_procs = ne_get_proc_count(neid);
+      nem_int_n_maps->stats = malloc(sizeof(int) * num_procs);
+
+      ne_fill_map_status(neid, stat_var, nem_int_n_maps->stats);
+    }
+    maps = nem_int_n_maps;
+    maps->neid = neid;
+    maps->num  = num_procs;
+  } 
+  else if (strcmp(stat_var, VAR_BOR_N_STAT ) == 0) {
+    if (nem_bor_n_maps == 0) {
+      nem_bor_n_maps = malloc(sizeof(ne_stat_struct));
+      num_procs = ne_get_proc_count(neid);
+      nem_bor_n_maps->stats = malloc(sizeof(int) * num_procs);
+
+      ne_fill_map_status(neid, stat_var, nem_bor_n_maps->stats);
+    }
+    maps = nem_bor_n_maps;
+    maps->neid = neid;
+    maps->num  = num_procs;
+  } 
+  else if (strcmp(stat_var, VAR_EXT_N_STAT ) == 0) {
+    if (nem_ext_n_maps == 0) {
+      nem_ext_n_maps = malloc(sizeof(ne_stat_struct));
+      num_procs = ne_get_proc_count(neid);
+      nem_ext_n_maps->stats = malloc(sizeof(int) * num_procs);
+
+      ne_fill_map_status(neid, stat_var, nem_ext_n_maps->stats);
+    }
+    maps = nem_ext_n_maps;
+    maps->neid = neid;
+    maps->num  = num_procs;
+  } 
+  else if (strcmp(stat_var, VAR_INT_E_STAT ) == 0) {
+    if (nem_int_e_maps == 0) {
+      nem_int_e_maps = malloc(sizeof(ne_stat_struct));
+      num_procs = ne_get_proc_count(neid);
+      nem_int_e_maps->stats = malloc(sizeof(int) * num_procs);
+
+      ne_fill_map_status(neid, stat_var, nem_int_e_maps->stats);
+    }
+    maps = nem_int_e_maps;
+    maps->neid = neid;
+    maps->num  = num_procs;
+  } 
+  else if (strcmp(stat_var, VAR_BOR_E_STAT ) == 0) {
+    if (nem_bor_e_maps == 0) {
+      nem_bor_e_maps = malloc(sizeof(ne_stat_struct));
+      num_procs = ne_get_proc_count(neid);
+      nem_bor_e_maps->stats = malloc(sizeof(int) * num_procs);
+
+      ne_fill_map_status(neid, stat_var, nem_bor_e_maps->stats);
+    }
+    maps = nem_bor_e_maps;
+    maps->neid = neid;
+    maps->num  = num_procs;
+  } 
+
+  exerrval = 0; /* clear error code */
+
+  if (maps != 0) {
+    *stat = maps->stats[proc_id];
+    return(EX_NOERR);
+  } else {
+    return(EX_FATAL);
+  }
+}
+

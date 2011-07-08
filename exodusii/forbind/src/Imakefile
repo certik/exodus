@@ -65,6 +65,9 @@
 #define OSystem              osf
 
 #elif defined AIXArchitecture
+#define OSystem              aix 
+
+#elif defined PPCArchitecture && !defined DarwinArchitecture
 #define OSystem              aix
 
 #elif defined InterixArchitecture
@@ -99,8 +102,6 @@ INCLUDES = IncRef-I../../cbind/include
 F77EXTRAOPTIONS = IncRef-I../include
 
 OS_TYPE = OSystem
-
-DEFINES = -DEX_ERR_STR
 
 F77CPPFLAGS = F77CppFlags
 

@@ -30,6 +30,7 @@ c	09/07/93 V.R. Yarberry - Modified for API 2.00
       integer elem_num
       integer cpu_ws,io_ws, mod_sz
       integer num_props, prop_value
+      integer mxalnmlen, mxusnmlen
 
       real time_value, time_values(100), var_values(100)
       real x(100), y(100), z(100)
@@ -65,6 +66,12 @@ c
       mod_sz = exlgmd(exoid)
       write (iout, '("  Model Size",i2)') mod_sz
 
+      call exinq (exoid, EXNEBP, num_props, fdum, cdum, ierr)
+      call exinq (exoid, EXDBMXALNM, mxalnmlen, fdum, cdum, ierr)
+      call exinq (exoid, EXDBMXUSNM, mxusnmlen, fdum, cdum, ierr)
+      write (iout, '("  Maximum Allowed/Used DB Name Size ",i2,i2)')
+     *  mxalnmlen, mxusnmlen
+      
 c
 c read database parameters
 c

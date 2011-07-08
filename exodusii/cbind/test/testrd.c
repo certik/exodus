@@ -68,14 +68,20 @@ int main (int argc, char **argv)
   int i, j, k, node_ctr;
   int *elem_map, *connect, *node_list, *node_ctr_list, *elem_list, *side_list;
   int *ids; 
-  int *num_nodes_per_set, *num_elem_per_set;
-  int *num_df_per_set;
-  int *node_ind, *elem_ind, *df_ind, num_qa_rec, num_info;
+  int *num_nodes_per_set = NULL;
+  int *num_elem_per_set = NULL;
+  int *num_df_per_set = NULL;
+  int *node_ind = NULL;
+  int *elem_ind = NULL;
+  int *df_ind = NULL;
+  int num_qa_rec, num_info;
   int num_glo_vars, num_nod_vars, num_ele_vars;
   int num_nset_vars, num_sset_vars;
   int *truth_tab;
   int num_time_steps;
-  int *num_elem_in_block, *num_nodes_per_elem, *num_attr;
+  int *num_elem_in_block = NULL;
+  int *num_nodes_per_elem = NULL;
+  int *num_attr = NULL;
   int num_nodes_in_set, num_elem_in_set;
   int num_sides_in_set, num_df_in_set;
   int list_len, elem_list_len, node_list_len, df_list_len;
@@ -94,6 +100,7 @@ int main (int argc, char **argv)
   char *attrib_names[10];
   char name[MAX_STR_LENGTH+1];
   char title[MAX_LINE_LENGTH+1], elem_type[MAX_STR_LENGTH+1];
+  char title_chk[MAX_LINE_LENGTH+1];
   char *cdum = 0;
   char *prop_names[3];
 
@@ -140,6 +147,12 @@ int main (int argc, char **argv)
   printf ("num_node_sets = %3d\n",num_node_sets);
   printf ("num_side_sets = %3d\n",num_side_sets);
 
+  /* Check that ex_inquire gives same title */
+  error = ex_inquire (exoid, EX_INQ_TITLE, &idum, &fdum, title_chk);
+  if (strcmp(title, title_chk) != 0) {
+    printf ("error in ex_inquire for EX_INQ_TITLE\n");
+  }
+  
   /* read nodal coordinates values and names from database */
 
   x = (float *) calloc(num_nodes, sizeof(float));
@@ -196,9 +209,10 @@ int main (int argc, char **argv)
 
   error = ex_get_coord_names (exoid, coord_names);
   printf ("\nafter ex_get_coord_names, error = %3d\n", error);
-
   printf ("x coord name = '%s'\n", coord_names[0]);
   printf ("y coord name = '%s'\n", coord_names[1]);
+  if (num_dim >2)
+    printf ("z coord name = '%s'\n", coord_names[2]);
 
   for (i=0; i<num_dim; i++)
     free(coord_names[i]);

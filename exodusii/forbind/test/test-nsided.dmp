@@ -4,6 +4,7 @@ dimensions:
 	len_line = 81 ;
 	four = 4 ;
 	time_step = UNLIMITED ; // (0 currently)
+	len_name = 33 ;
 	num_dim = 3 ;
 	num_nodes = 33 ;
 	num_elem = 7 ;
@@ -12,6 +13,8 @@ dimensions:
 	num_nod_per_el1 = 37 ;
 	num_qa_rec = 2 ;
 	num_info = 3 ;
+	num_cframes = 3 ;
+	num_cframes_9 = 27 ;
 variables:
 	float time_whole(time_step) ;
 	int eb_status(num_el_blk) ;
@@ -20,8 +23,8 @@ variables:
 	float coordx(num_nodes) ;
 	float coordy(num_nodes) ;
 	float coordz(num_nodes) ;
-	char eb_names(num_el_blk, len_string) ;
-	char coor_names(num_dim, len_string) ;
+	char eb_names(num_el_blk, len_name) ;
+	char coor_names(num_dim, len_name) ;
 	int elem_map(num_elem) ;
 	int connect1(num_nod_per_el1) ;
 		connect1:elem_type = "nsided" ;
@@ -30,11 +33,15 @@ variables:
 		ebepecnt1:entity_type2 = "ELEM" ;
 	char qa_records(num_qa_rec, four, len_string) ;
 	char info_records(num_info, len_line) ;
+	float frame_coordinates(num_cframes_9) ;
+	int frame_ids(num_cframes) ;
+	char frame_tags(num_cframes) ;
 
 // global attributes:
 		:floating_point_word_size = 4 ;
 		:file_size = 1 ;
 		:title = "This is a test" ;
+		:maximum_name_length = 5 ;
 data:
 
  eb_status = 1 ;
@@ -78,4 +85,12 @@ data:
   "This is the first information record.",
   "This is the second information record.",
   "This is the third information record." ;
+
+ frame_coordinates = 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.1, 1.2, 
+    1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 
+    2.8, 2.9 ;
+
+ frame_ids = 1, 11, 111 ;
+
+ frame_tags = "RCS" ;
 }

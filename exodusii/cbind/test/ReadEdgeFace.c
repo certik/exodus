@@ -20,7 +20,7 @@
       fprintf( stdout, sucmsg, ival ); \
     }
 
-int obj_types[] = {
+ex_entity_type obj_types[] = {
   EX_EDGE_BLOCK,
   EX_FACE_BLOCK,
   EX_ELEM_BLOCK,
@@ -35,7 +35,7 @@ int obj_types[] = {
   EX_ELEM_MAP
 };
 
-int obj_sizes[] = {
+ex_inquiry obj_sizes[] = {
   EX_INQ_EDGE_BLK,
   EX_INQ_FACE_BLK,
   EX_INQ_ELEM_BLK,
@@ -358,6 +358,8 @@ int cReadEdgeFace( int argc, char* argv[] )
         case EX_ELEM_MAP:
           num_entries = modelParams.num_elem;
           break;
+	default:
+          num_entries = 0;
         }
         if ( num_entries ) {
           fprintf( stdout, "Entries: %3d\n                :", num_entries );

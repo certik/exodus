@@ -105,19 +105,10 @@ extern void ex_fstrncpy(char*, char*, int);
     int slen;
     *ierr=0;     /* default no errror */
 
-    /* WARNING: var_namelen SHOULD be MAX_STR_LENGTH, but may not be depending
-                on how the Fortran programmer passed it. It is best at
-                this time to hard code it per EXPVNM spec. */
-    slen = MAX_STR_LENGTH;      /* max str size */
-    if (var_namelen != MAX_STR_LENGTH)
+    slen = ex_inquire_int(*idexo, EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH);	/* max str size */
+    if (var_namelen < slen)
     {
       slen = var_namelen;
-#if defined(EXODUS_STRING_LENGTH_WARNING)
-      sprintf(errmsg,
-             "Warning: variable name string length is %d in file id %d\n",
-              var_namelen, *idexo);
-      ex_err("expvnm",errmsg,EX_MSG);
-#endif
     }
 
     /* Allocate staging space for the variable name */

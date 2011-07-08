@@ -41,17 +41,7 @@ XCOMM Building ExodusII libraries for installation
  * Building ExodusII libraries for debugging
  * % accmkmf
  * % make Makefiles
- * % make CDEBUGFLAGS=-g
- *
- * Building ExodusII libraries on Sandias Teraflop machine
- * Service Partition
- * % accmkmf
- * % make Makefiles
- * % make all
- * Service Partition
- * % accmkmf -D PARALLEL
- * % make Makefiles
- * % make all
+ * % make DEBUG=-g
  *
  */
 
@@ -87,7 +77,7 @@ InstallSubdirIncludeList(makeincludes,cbind/include,$(INCLIST1),$(INCDIR))
 InstallSubdirIncludeList(makeincludes,forbind/include,$(INCLIST2),$(INCDIR))
 
 /* Directory for exodusII c library */
-NamedTargetSubdirs(libexodus.a,cbind/src,"making exodus ",PassDebugFlags ExtraOptions,libexodus.a)
+NamedTargetSubdirs(libexodus.a,cbind/src,"making exodus ",PassDebugFlags ExtraOptions,all)
 
 /* Directory for exodusII fortran wrappers */
 NamedTargetSubdirs(libexoIIv2for.a,forbind/src,"making exoIIv2for ",PassDebugFlags ExtraOptions,libexoIIv2for.a)

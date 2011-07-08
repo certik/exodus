@@ -4,6 +4,7 @@ dimensions:
 	len_line = 81 ;
 	four = 4 ;
 	time_step = UNLIMITED ; // (0 currently)
+	len_name = 33 ;
 	num_dim = 2 ;
 	num_nodes = 8 ;
 	num_elem = 2 ;
@@ -34,7 +35,7 @@ variables:
 	int ss_prop1(num_side_sets) ;
 		ss_prop1:name = "ID" ;
 	float coord(num_dim, num_nodes) ;
-	char coor_names(num_dim, len_string) ;
+	char coor_names(num_dim, len_name) ;
 	int elem_map(num_elem) ;
 	float attrib1(num_el_in_blk1, num_att_in_blk1) ;
 	int connect1(num_el_in_blk1, num_nod_per_el1) ;
@@ -69,6 +70,7 @@ variables:
 		:floating_point_word_size = 4 ;
 		:file_size = 0 ;
 		:title = "This is a test" ;
+		:maximum_name_length = 9 ;
 data:
 
  eb_status = 1, 1 ;

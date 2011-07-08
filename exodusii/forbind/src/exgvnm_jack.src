@@ -104,17 +104,10 @@ extern void ex_fcdcpy(char*, int, char*);
     int slen;
     *ierr=0;     /* default no errror */
 
-    /* WARNING: var_namelen SHOULD be MAX_STR_LENGTH, but may not be depending
-                on how the Fortran programmer passed it. It is best at
-                this time to hard code it per EXGVNM spec. */
-    slen = MAX_STR_LENGTH;      /* max str size */
-    if (var_namelen != MAX_STR_LENGTH)
+    slen = ex_max_name_length;      /* max str size */
+    if (var_namelen < slen)
     {
       slen = var_namelen;
-      sprintf(errmsg,
-             "Warning: variable name string length is %d in file id %d\n",
-              var_namelen, *idexo);
-      ex_err("exgvnm",errmsg,EX_MSG);
     }
 
     /* Allocate staging space for the variable name */
@@ -147,8 +140,9 @@ extern void ex_fcdcpy(char*, int, char*);
     }
 
     /* Copy Fortran variable names to staging space */
-      /** printf("[exgvnm] var_name(%d): %s\n",*var_index,sptr)); **/
-      ex_fcdcpy(var_name,slen,sptr);/* copy string into Fortran buffer */
+    /** printf("[exgvnm] var_name(%d): %s\n",*var_index,sptr)); **/
+    memset(var_name, 0, var_namelen);
+    ex_fcdcpy(var_name,slen,sptr);/* copy string into Fortran buffer */
 
     free(sptr); /* Free up string staging area */
 }

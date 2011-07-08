@@ -365,6 +365,9 @@ c
          call exit (0)
       endif
 
+c ... Define and write some coordinate frames
+      call putfrm(exoid)
+
 c
 c close the EXODUS files
 c
@@ -372,4 +375,42 @@ c
       write (iout, '("after exclos, error = ", i4)' ) ierr
 
       stop
+      end
+
+      subroutine putfrm(exoid)
+      implicit none
+      include 'exodusII.inc'
+
+      integer exoid, ierr, i
+      integer numfrm;   ! Assumed to be 3 for remaining dimensions
+      integer cfids(3), tags(3)
+      real    coord(27)
+
+      numfrm = 3
+      
+      cfids(1) =   1
+      cfids(2) =  11
+      cfids(3) = 111
+
+      tags(1) = EXCFREC
+      tags(2) = EXCFCYL
+      tags(3) = EXCFSPH
+
+! NOTE: These values may not be sensical; just used for testing.
+      do i=0,2
+        COORD(9*i+1) = i+0.1
+        COORD(9*i+2) = i+0.2
+        COORD(9*i+3) = i+0.3
+        COORD(9*i+4) = i+0.4
+        COORD(9*i+5) = i+0.5
+        COORD(9*i+6) = i+0.6
+        COORD(9*i+7) = i+0.7
+        COORD(9*i+8) = i+0.8
+        COORD(9*i+9) = i+0.9
+      end do
+      
+      call expfrm(exoid, numfrm, cfids, coord, tags, ierr);
+      write (6,'("after expfrm, error = ", i4)') ierr
+
+      return
       end
