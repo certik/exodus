@@ -4,20 +4,20 @@ find_path( NETCDF_INCLUDE_DIR netcdf.h
    $ENV{NETCDF_DIR}/inc
    $ENV{NETCDF_DIR}/include
    $ENV{NETCDF_DIR}/libsrc
-)	
+   )	
 
-find_library( NETCDF_LIBRARY
-   NAMES netcdf
-   PATHS "$ENV{ACCESS}/lib"
-         "$ENV{NETCDF_DIR}/lib"
-	 "$ENV{NETCDF_DIR}/libsrc/.libs"
-)
+find_library( NETCDF_LIBRARY netcdf
+  $ENV{ACCESS}/lib/shared
+  $ENV{ACCESS}/lib
+  $ENV{NETCDF_DIR}/lib
+  $ENV{NETCDF_DIR}/libsrc/.libs
+  )
 
 find_program (NETCDF_NCDUMP ncdump
    $ENV{ACCESS}/bin
    $ENV{NETCDF_DIR}/bin
    $ENV{NETCDF_DIR}/ncdump
-)
+   )
 
 INCLUDE(CheckIncludeFile)
 CHECK_INCLUDE_FILE( malloc.h EX_HAVE_MALLOC_H )
