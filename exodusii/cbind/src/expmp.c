@@ -49,6 +49,7 @@
 
 #include "exodusII.h"
 #include "exodusII_int.h"
+#include <stdlib.h>
 #include <assert.h>
 
 /*!

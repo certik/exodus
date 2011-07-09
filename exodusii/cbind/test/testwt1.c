@@ -179,7 +179,8 @@ int main (int argc, char **argv)
    printf ("after ex_put_coord_names, error = %d\n", error);
 
 
-   /* write node and element map parameters */
+/* write node and element map parameters */
+
    num_node_maps = 1;
    num_elem_maps = 2;
 
@@ -187,13 +188,15 @@ int main (int argc, char **argv)
 
    printf ("after ex_put_map_param, error = %d\n", error);
 
-   /* write element map properties */
+/* write element map properties */
+
    prop_names[0] = "ORDER";
    prop_names[1] = "NUMBER";
    error = ex_put_prop_names(exoid,EX_ELEM_MAP,2,prop_names);
    printf ("after ex_put_prop_names, error = %d\n", error);
 
-   /* write element order map */
+/* write element order map */
+
    elem_map = (int *) calloc(num_elem, sizeof(int));
 
    for (i=1; i<=num_elem; i++)
@@ -210,7 +213,8 @@ int main (int argc, char **argv)
    error = ex_put_prop(exoid, EX_ELEM_MAP, id, "ORDER", 1);
    printf ("after ex_put_prop, error = %d\n", error);
 
-   /* write element numbering map */
+/* write element numbering map */
+
    elem_map = (int *) calloc(num_elem, sizeof(int));
 
    for (i=1; i<=num_elem; i++)
