@@ -180,6 +180,11 @@ extern "C" {
   };
   typedef enum ex_options ex_options;
   
+  /** The value used to indicate that an entity (block, nset, sset)
+      has not had its id set to a valid value
+  */
+#define EX_INVALID_ID -1
+
   /**
    * \defgroup StringLengths maximum string lengths;
    * constants that are used as netcdf dimensions must be of type long
