@@ -7,7 +7,7 @@ gdsjaar@sandia.gov
 
 ========================================================================
 LICENSE:
-The ExodusII library is licensed under the terms of the BSD License. 
+The Exodus library is licensed under the terms of the BSD License. 
 
 Legal stuff (copyright, licensing restrictions, etc.) can be found in
 the file COPYRIGHT which contains:
@@ -24,11 +24,11 @@ Please identify the version of the package.
 ========================================================================
 BUILDING
 
-There are 4 methods for building exodusII.
+There are 4 methods for building exodus.
 
 1. SEAMS/SEACAS Build system which is based on imake.  If you have a
 SEAMS or SEACAS installation, you can use its build system.  In the
-top-level exodusii directory, do 'accmkmf' followed by 'make
+top-level exodus directory, do 'accmkmf' followed by 'make
 Makefiles' and then 'make'
 
 2. CMAKE: type 'cmake .' or 'cmake -i' to generate the Makefiles
@@ -60,14 +60,14 @@ check"
 ========================================================================
 NETCDF
 
-The exodusII library uses the netcdf library for low-level data
+The exodus library uses the netcdf library for low-level data
 storage.
 
-ExodusII requires NetCDF version 3.6.0 or later with the "large-model
+Exodus requires NetCDF version 3.6.0 or later with the "large-model
 modifications".  NetCDF version 4.1 or later is highly recommended.
 
 The netcdf library must be modified slightly in order to handle the
-exodusII datamodel. The specific changes are:
+exodus datamodel. The specific changes are:
 
 PRE netcdf-4.1.2:
 1. libsrc/netcdf.h -- Modify the following defines:
