@@ -19,6 +19,23 @@ find_program (NETCDF_NCDUMP ncdump
    $ENV{NETCDF_DIR}/ncdump
    )
 
+# Hack for HDF5
+find_library( HDF5_LIBRARY hdf5
+  $ENV{ACCESS}/lib/shared
+  $ENV{ACCESS}/lib
+  $ENV{NETCDF_DIR}/lib
+  $ENV{NETCDF_DIR}/libsrc/.libs
+  /usr/local/hdf5/lib
+  )
+find_library( HDF5HL_LIBRARY hdf5_hl
+  $ENV{ACCESS}/lib/shared
+  $ENV{ACCESS}/lib
+  $ENV{NETCDF_DIR}/lib
+  $ENV{NETCDF_DIR}/libsrc/.libs
+  /usr/local/hdf5/lib
+  )
+
+
 INCLUDE(CheckIncludeFile)
 CHECK_INCLUDE_FILE( malloc.h EX_HAVE_MALLOC_H )
 
@@ -226,7 +243,7 @@ ENDIF(APPLE)
 
 ADD_LIBRARY(exoIIv2c ${cbind_SRCS})
 
-TARGET_LINK_LIBRARIES(exoIIv2c ${NETCDF_LIBRARY})
+TARGET_LINK_LIBRARIES(exoIIv2c ${NETCDF_LIBRARY} ${HDF5_LIBRARY} ${HDF5HL_LIBRARY})
 
 IF(MSVC)
   set_target_properties(exoIIv2c PROPERTIES COMPILE_DEFINITIONS _CRT_SECURE_NO_WARNINGS)

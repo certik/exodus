@@ -36,13 +36,35 @@ find_library( EXODUS_LIBRARY exodus
   $ENV{ACCESS}/lib
   )
 
+# Hack for HDF5
+find_library( HDF5_LIBRARY hdf5
+  $ENV{ACCESS}/lib/shared
+  $ENV{ACCESS}/lib
+  $ENV{NETCDF_DIR}/lib
+  $ENV{NETCDF_DIR}/libsrc/.libs
+  /usr/local/hdf5/lib
+  )
+
+find_library( HDF5HL_LIBRARY hdf5_hl
+  $ENV{ACCESS}/lib/shared
+  $ENV{ACCESS}/lib
+  $ENV{NETCDF_DIR}/lib
+  $ENV{NETCDF_DIR}/libsrc/.libs
+  /usr/local/hdf5/lib
+  )
+
+find_library(Z_LIBRARY z
+  /usr/local/zlib/lib
+  )
+
+find_library(MATH_LIBRARY
+             NAMES m
+             PATHS /usr/lib64
+                   /usr/lib
+)
+
 INCLUDE(CheckIncludeFile)
 CHECK_INCLUDE_FILE( malloc.h EX_HAVE_MALLOC_H )
-
-CONFIGURE_FILE(
-  ${CMAKE_CURRENT_SOURCE_DIR}/nemesis_cfg.h.in
-  ${CMAKE_CURRENT_BINARY_DIR}/nemesis_cfg.h
-  @ONLY IMMEDIATE)
 
 INCLUDE_DIRECTORIES(
   "${CMAKE_CURRENT_SOURCE_DIR}"
@@ -81,8 +103,8 @@ ne_pcmpc.c
 ne_pebig.c
 ne_pelcm.c
 ne_pelm.c
-ne_pennm.c
 ne_pevs.c
+ne_pennm.c
 ne_piinf.c
 ne_pinig.c
 ne_plbp.c
@@ -104,7 +126,13 @@ ne_util.c
 )
 
 ADD_LIBRARY(nemesis ${SOURCES})
-TARGET_LINK_LIBRARIES(nemesis ${EXODUS_LIBRARY} ${NETCDF_LIBRARY})
+TARGET_LINK_LIBRARIES(nemesis ${EXODUS_LIBRARY} ${NETCDF_LIBRARY} ${HDF5HL_LIBRARY} ${HDF5_LIBRARY} ${Z_LIBRARY} ${MATH_LIBRARY})
 
 ADD_EXECUTABLE(ne_test ne_test.c)
-TARGET_LINK_LIBRARIES( ne_test nemesis ${EXODUS_LIBRARY} ${NETCDF_LIBRARY})
+TARGET_LINK_LIBRARIES( ne_test nemesis ${EXODUS_LIBRARY} ${NETCDF_LIBRARY} ${HDF5HL_LIBRARY} ${HDF5_LIBRARY} ${Z_LIBRARY} ${MATH_LIBRARY})
+
+INSTALL(TARGETS nemesis
+  RUNTIME DESTINATION lib COMPONENT Runtime
+  LIBRARY DESTINATION lib COMPONENT Runtime
+  ARCHIVE DESTINATION lib COMPONENT Development)
+INSTALL(FILES ${HEADERS} DESTINATION include COMPONENT Development)
