@@ -63,7 +63,8 @@ SET( cbind_OLDTESTS
   testwt-nfaced
   create_mesh
   rd_wt_mesh
-)
+  testwt-long-name
+  testrd-long-name)
 
 CONFIGURE_FILE(
   ${CMAKE_CURRENT_SOURCE_DIR}/testall.in
