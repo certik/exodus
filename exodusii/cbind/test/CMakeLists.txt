@@ -1,7 +1,5 @@
 ADD_DEFINITIONS(-DUSING_CMAKE)
 
-SET(CMAKE_BUILD_TYPE debug)
-
 SET( cbind_TEST_SRCS
   CreateEdgeFace.c
   ReadEdgeFace.c
@@ -63,8 +61,6 @@ SET( cbind_OLDTESTS
   testwt-nsided
   testrd-nfaced
   testwt-nfaced
-  testwt-long-name
-  testrd-long-name
   create_mesh
   rd_wt_mesh
 )

@@ -79,6 +79,48 @@ struct obj_stats*  exoII_nm = 0;
 static char ret_string[10*(MAX_VAR_NAME_LENGTH+1)];
 static char* cur_string = &ret_string[0];
 
+int ex_check_file_type(const char *path, int *type)
+{
+  /* Based on (stolen from?) NC_check_file_type from netcdf sources.
+     
+     Type is set to:
+     1 if this is a netcdf classic file,
+     2 if this is a netcdf 64-bit offset file,
+     5 if this is an hdf5 file
+  */
+  
+#define MAGIC_NUMBER_LEN 4
+
+   char magic[MAGIC_NUMBER_LEN];
+    
+   *type = 0; 
+
+   /* Get the 4-byte magic from the beginning of the file. */
+   {
+      FILE *fp;
+      int i;
+
+      if (!(fp = fopen(path, "r")))
+	 return errno;
+      i = fread(magic, MAGIC_NUMBER_LEN, 1, fp);
+      fclose(fp);
+      if(i != 1)
+	 return errno;
+   }
+    
+   /* Ignore the first byte for HDF */
+   if (magic[1] == 'H' && magic[2] == 'D' && magic[3] == 'F')
+     *type = 5;
+   else if (magic[0] == 'C' && magic[1] == 'D' && magic[2] == 'F') 
+   {
+      if (magic[3] == '\001') 
+	*type = 1;
+      else if(magic[3] == '\002') 
+	*type = 2;
+   }
+   return EX_NOERR;
+}
+
 int ex_set_max_name_length(int exoid, int length)
 {
   char errmsg[MAX_ERR_LENGTH];
@@ -232,16 +274,21 @@ int ex_get_names_internal(int exoid, int varid, size_t num_entity, char **names,
   size_t i;
   int status;
 
-  /* read the names */
+  /* Query size of names on file
+   * Use the smaller of the size on file or ex_max_name_length
+   */
+  int db_name_size = ex_inquire_int(exoid, EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH);
+  int name_size = db_name_size < ex_max_name_length ? db_name_size : ex_max_name_length;
+  
   for (i=0; i<num_entity; i++) {
-    status = ex_get_name_internal(exoid, varid, i, names[i], obj_type, routine);
+    status = ex_get_name_internal(exoid, varid, i, names[i], name_size, obj_type, routine);
     if (status != NC_NOERR)
       return status;
   }
   return EX_NOERR;
 }
 
-int ex_get_name_internal(int exoid, int varid, size_t index, char *name,
+int ex_get_name_internal(int exoid, int varid, size_t index, char *name, int name_size,
 			 ex_entity_type obj_type, const char *routine)
 {
   size_t start[2], count[2];
@@ -250,7 +297,7 @@ int ex_get_name_internal(int exoid, int varid, size_t index, char *name,
 
   /* read the name */
   start[0] = index;  count[0] = 1;
-  start[1] = 0;      count[1] = ex_max_name_length+1;
+  start[1] = 0;      count[1] = name_size+1;
 
   status = nc_get_vara_text(exoid, varid, start, count, name);
   if (status != NC_NOERR) {

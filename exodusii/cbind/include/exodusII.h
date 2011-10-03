@@ -47,8 +47,8 @@
 #include "stddef.h"
 
 /* EXODUS II version number */
-#define EX_API_VERS 5.10f
-#define EX_API_VERS_NODOT 510
+#define EX_API_VERS 5.14f
+#define EX_API_VERS_NODOT 514
 #define EX_VERS EX_API_VERS
 
 
@@ -84,6 +84,7 @@ extern "C" {
 #define EX_NETCDF4              8 /**< use the hdf5-based netcdf4 output */
 #define EX_NOSHARE             16 /**< Do not open netcdf file in "share" mode */
 #define EX_SHARE               32 /**< Do open netcdf file in "share" mode */
+#define EX_NOCLASSIC           64 /**< Do not force netcdf to classic mode in netcdf4 mode */
 
 #define EX_READ                 0
 #define EX_WRITE                1
@@ -591,6 +592,12 @@ extern "C" {
   EXODUS_EXPORT int ex_put_id_map(int exoid,
 				  ex_entity_type obj_type,
 				  const int *map);
+  
+  EXODUS_EXPORT int ex_put_partial_id_map(int exoid,
+					  ex_entity_type obj_type,
+					  int   start_entity_num,
+					  int   num_entities,
+					  const int *map);
   
   EXODUS_EXPORT int ex_get_id_map(int exoid,
 				  ex_entity_type obj_type,

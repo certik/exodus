@@ -592,10 +592,11 @@ struct obj_stats *ex_get_stat_ptr  ( int exoid, struct obj_stats** obj_ptr);
 void ex_rm_stat_ptr  (int exoid, struct obj_stats** obj_ptr);
 
 int ex_id_lkup  (int exoid, ex_entity_type id_type, int num);
+int ex_check_file_type(const char *path, int *type);
 int ex_get_dimension(int exoid, const char *dimtype, const char *label,
 		     size_t *count, int *dimid, const char *routine);
 
-int ex_get_name_internal(int exoid, int varid, size_t index, char *name,
+int ex_get_name_internal(int exoid, int varid, size_t index, char *name, int name_size, 
 			 ex_entity_type type, const char *routine);
 int ex_get_names_internal(int exoid, int varid, size_t count, char**names,
 			  ex_entity_type type, const char *routine);

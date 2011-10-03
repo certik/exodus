@@ -32,203 +32,45 @@
 # 
 
 
-#if defined CrayArchitecture || defined SunArchitecture || defined AIXArchitecture
-#define Libtype              sharable
-#define ArNet                ar
-#else
-#define Libtype              nonsharable
-#define ArNet                ar clr
-#endif
-
-#if defined CatamountArchitecture
-#define OSystem catamount
-
-#elif defined CougarArchitecture
-#define OSystem              cougar
-
-#elif defined SGIArchitecture
-#define OSystem              irix
-
-#elif defined CrayArchitecture
-#define OSystem              unicos
-
-#elif defined SunArchitecture
-#define OSystem              sunos
-
-#elif defined HPArchitecture
-#define OSystem              hpux
-
-#elif defined UltrixArchitecture
-#define OSystem              ultrix
-
-#elif defined OSF1Architecture
-#define OSystem              osf
-
-#elif defined AIXArchitecture
-#define OSystem              aix 
-
-#elif defined PPCArchitecture && !defined DarwinArchitecture
-#define OSystem              aix
-
-#elif defined InterixArchitecture
-#define OSystem              interix
-
-#elif defined AlphaArchitecture
-#define OSystem              linux
-
-#elif defined i386Architecture
-#define OSystem              linux
-
-#elif defined x86_64Architecture
-#define OSystem              linux
-
-#elif defined ia64Architecture
-#define OSystem              linux
-
-#elif defined DarwinArchitecture
-#define OSystem              darwin
-
-#else
-#define OSystem              ""
-#error "Could not determine Operating System type in exodusii/forbind/src/Imakefile."
-#endif   
-
-#ifndef CArchive
-#define CArchive             ""
-#endif
-
 /* Use *.h files in ../../cbind/include/ instead of installed *.h files  */
 INCLUDES = IncRef-I../../cbind/include
 F77EXTRAOPTIONS = IncRef-I../include
 
-OS_TYPE = OSystem
-
 F77CPPFLAGS = F77CppFlags
 
-SRCS = exo_jack.c    exgenm_jack.c  expenm_jack.c  exgnnm_jack.c \
-       exgvnm_jack.c expvnm_jack.c  expnnm_jack.c  excopy_jack.c \
-       exgem_jack.c  exgmp_jack.c   exgnm_jack.c   expem_jack.c  \
-       expmp_jack.c  expnm_jack.c
+SRCS = exo_jack.c    
+SRCSF = addrwrap.F
 
-SRCSF = addrwrap.f
-
-OBJS = ${SRCS:.c=.o} ${SRCSF:.f=.o}
+OBJS = ${SRCS:.c=.o} ${SRCSF:.F=.o}
+LibraryTargetSubdirsCopy(libexoIIv2for.a,$(OBJS),../../)
+CleanupCapF(addrwrap.f)
 
 #if Build64BitAccess == YES
-#define Bits 64
-#else
-#define Bits 32
-#endif
-
-BITS = Bits
-
-#if Build64BitAccess == YES     
-
-SRCS32 = exo_jack32.c    exgenm_jack32.c  expenm_jack32.c  exgnnm_jack32.c \
-         exgvnm_jack32.c expvnm_jack32.c  expnnm_jack32.c  excopy_jack32.c \
-         exgem_jack32.c  exgmp_jack32.c   exgnm_jack32.c   expem_jack32.c  \
-         expmp_jack32.c  expnm_jack32.c
-
-OBJS32 = ${SRCS32:.c=.o}
-
-exo_jack32.c:     exo_jack.src fortc1.sed fortc2.sed common.m4 $(OS_TYPE).m4
-		  ./fortc -L . -P 32 -O $(OS_TYPE) exo_jack.src > $@
-
-exgenm_jack32.c:  exgenm_jack.src fortc1.sed fortc2.sed common.m4  $(OS_TYPE).m4
-		  ./fortc -L . -P 32 -O $(OS_TYPE) exgenm_jack.src > $@
-
-expenm_jack32.c:  expenm_jack.src fortc1.sed fortc2.sed common.m4  $(OS_TYPE).m4
-		  ./fortc -L . -P 32 -O $(OS_TYPE) expenm_jack.src > $@
-
-exgnnm_jack32.c:  exgnnm_jack.src fortc1.sed fortc2.sed common.m4  $(OS_TYPE).m4
-		  ./fortc -L . -P 32 -O $(OS_TYPE) exgnnm_jack.src > $@
-
-expnnm_jack32.c:  expnnm_jack.src fortc1.sed fortc2.sed common.m4  $(OS_TYPE).m4
-		  ./fortc -L . -P 32 -O $(OS_TYPE) expnnm_jack.src > $@
-
-exgvnm_jack32.c:  exgvnm_jack.src fortc1.sed fortc2.sed common.m4  $(OS_TYPE).m4
-		  ./fortc -L . -P 32 -O $(OS_TYPE) exgvnm_jack.src > $@
-
-expvnm_jack32.c:  expvnm_jack.src fortc1.sed fortc2.sed common.m4  $(OS_TYPE).m4
-		  ./fortc -L . -P 32 -O $(OS_TYPE) expvnm_jack.src > $@
-
-excopy_jack32.c:  excopy_jack.src fortc1.sed fortc2.sed common.m4  $(OS_TYPE).m4
-		  ./fortc -L . -P 32 -O $(OS_TYPE) excopy_jack.src > $@
-
-exgem_jack32.c:  exgem_jack.src fortc1.sed fortc2.sed common.m4  $(OS_TYPE).m4
-		 ./fortc -L . -P 32 -O $(OS_TYPE) exgem_jack.src > $@
-
-exgmp_jack32.c:  exgmp_jack.src fortc1.sed fortc2.sed common.m4  $(OS_TYPE).m4
-		 ./fortc -L . -P 32 -O $(OS_TYPE) exgmp_jack.src > $@
-
-exgnm_jack32.c:  exgnm_jack.src fortc1.sed fortc2.sed common.m4  $(OS_TYPE).m4
-		 ./fortc -L . -P 32 -O $(OS_TYPE) exgnm_jack.src > $@
-
-expem_jack32.c:  expem_jack.src fortc1.sed fortc2.sed common.m4  $(OS_TYPE).m4
-		 ./fortc -L . -P 32 -O $(OS_TYPE) expem_jack.src > $@
-
-expmp_jack32.c:  expmp_jack.src fortc1.sed fortc2.sed common.m4  $(OS_TYPE).m4
-		 ./fortc -L . -P 32 -O $(OS_TYPE) expmp_jack.src > $@
-
-expnm_jack32.c:  expnm_jack.src fortc1.sed fortc2.sed common.m4  $(OS_TYPE).m4
-		 ./fortc -L . -P 32 -O $(OS_TYPE) expnm_jack.src > $@
-
+/* Need to compile exo_jack.c without the -DBuild64 option
+ * real* -> float* (actually void* since it handles both float* and double*)
+ */
+exo_jack32.o: exo_jack.c
+	$(CC) -o exo_jack32.o -c $(CFLAGS) -DDEFAULT_REAL_INT exo_jack.c
+ 
 all:: libexoIIv2for32.a
-libexoIIv2for32.a: $(OBJS32)
+libexoIIv2for32.a: exo_jack32.o
 	$(AR) $@ $?
 	$(_NULLCMD_)
 	$(_NULLCMD_)
-	$(CP) libexoIIv2for32.a ../../
+	$(CP) $@ ../../
 
 #endif
 
-
-exo_jack.c:     exo_jack.src fortc1.sed fortc2.sed common.m4 $(OS_TYPE).m4
-		./fortc -L . -P $(BITS) -O $(OS_TYPE) exo_jack.src > $@
-
-exgenm_jack.c:  exgenm_jack.src fortc1.sed fortc2.sed common.m4  $(OS_TYPE).m4
-		./fortc -L . -P $(BITS) -O $(OS_TYPE) exgenm_jack.src > $@
-
-expenm_jack.c:  expenm_jack.src fortc1.sed fortc2.sed common.m4  $(OS_TYPE).m4
-		./fortc -L . -P $(BITS) -O $(OS_TYPE) expenm_jack.src > $@
-
-exgnnm_jack.c:  exgnnm_jack.src fortc1.sed fortc2.sed common.m4  $(OS_TYPE).m4
-		./fortc -L . -P $(BITS) -O $(OS_TYPE) exgnnm_jack.src > $@
-
-expnnm_jack.c:  expnnm_jack.src fortc1.sed fortc2.sed common.m4  $(OS_TYPE).m4
-		./fortc -L . -P $(BITS) -O $(OS_TYPE) expnnm_jack.src > $@
-
-exgvnm_jack.c:  exgvnm_jack.src fortc1.sed fortc2.sed common.m4  $(OS_TYPE).m4
-		./fortc -L . -P $(BITS) -O $(OS_TYPE) exgvnm_jack.src > $@
-
-expvnm_jack.c:  expvnm_jack.src fortc1.sed fortc2.sed common.m4  $(OS_TYPE).m4
-		./fortc -L . -P $(BITS) -O $(OS_TYPE) expvnm_jack.src > $@
-
-excopy_jack.c:  excopy_jack.src fortc1.sed fortc2.sed common.m4  $(OS_TYPE).m4
-		./fortc -L . -P $(BITS) -O $(OS_TYPE) excopy_jack.src > $@
-
-exgem_jack.c:  exgem_jack.src fortc1.sed fortc2.sed common.m4  $(OS_TYPE).m4
-		./fortc -L . -P $(BITS) -O $(OS_TYPE) exgem_jack.src > $@
-
-exgmp_jack.c:  exgmp_jack.src fortc1.sed fortc2.sed common.m4  $(OS_TYPE).m4
-		./fortc -L . -P $(BITS) -O $(OS_TYPE) exgmp_jack.src > $@
-
-exgnm_jack.c:  exgnm_jack.src fortc1.sed fortc2.sed common.m4  $(OS_TYPE).m4
-		./fortc -L . -P $(BITS) -O $(OS_TYPE) exgnm_jack.src > $@
-
-expem_jack.c:  expem_jack.src fortc1.sed fortc2.sed common.m4  $(OS_TYPE).m4
-		./fortc -L . -P $(BITS) -O $(OS_TYPE) expem_jack.src > $@
-
-expmp_jack.c:  expmp_jack.src fortc1.sed fortc2.sed common.m4  $(OS_TYPE).m4
-		./fortc -L . -P $(BITS) -O $(OS_TYPE) expmp_jack.src > $@
-
-expnm_jack.c:  expnm_jack.src fortc1.sed fortc2.sed common.m4  $(OS_TYPE).m4
-		./fortc -L . -P $(BITS) -O $(OS_TYPE) expnm_jack.src > $@
-
-LibraryTargetSubdirsCopy(libexoIIv2for.a,$(OBJS),../../)
-
-ExtraStuffToClean(*.c)
-CleanupCapF(addrwrap.f)
+/*
+ * 32-bit build:
+ *   Compile exo_jack.c and put in libexoIIv2for.a archive.
+ *
+ * 64-bit build: (using 8-byte integer/real)
+ *   Compile addrwrap.F                (contains main api name 'func'; calls 'func4' name)
+ *   Compile exo_jack.c with -DBuild64 (adds 4_ to function names)
+ *   -- put above two object files into libexoIIv2for.a
+ *
+ */
 
 DependTarget()
 
