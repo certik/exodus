@@ -75,7 +75,7 @@ endif
 
 ifeq ($(COMPILER),GNU)
 CC	= gcc
-FC      = g77
+FC      = gfortran
 CCOPTIONS  = -O2 -Wall 
 F77OPTIONS = -O2
 endif
@@ -94,7 +94,7 @@ AR        = CC -xar -o
 ifeq ($(COMPILER),GNU)
 BITS    = 32
 CC	= gcc
-FC      = g77
+FC      = gfortran
 CCOPTIONS = -Wall
 else
 BITS      = 32
@@ -176,30 +176,30 @@ endif
 #       Darwin (Apple OSX)
 #========================================================================
 ifeq ($(SYSTEM),Darwin)
-BITS = 32
+BITS = 64
 RANLIB = ranlib
 OS_TYPE = darwin
 
 AR        = ar -crsv
 CC        = gcc
-FC        = g77
+FC        = gfortran
 CCOPTIONS  = 
-F77OPTIONS = 
+F77OPTIONS = -fcray-pointer -fdefault-real-8 -fdefault-integer-8 
 endif
 #========================================================================
 
 OPTIMIZE_FLAG = -O2
-STD_DEFINES = -DVERBOSE
+STD_DEFINES = 
 
 CFLAGS = $(OPTIMIZE_FLAG) $(CCOPTIONS) $(STD_DEFINES) $(LOC_EXOII_INC) $(NETCDF_INC)
-FFLAGS = $(OPTIMIZE_FLAG) $(F77OPTIONS) $(LOC_EXOII_INC) $(F77PREC)
+FFLAGS = $(OPTIMIZE_FLAG) $(F77OPTIONS) $(LOC_EXOII_INC) $(F77PREC) -DADDC_
 
-# Use include files locates in exodusii/cbind/include
+# Use include files locates in exodus/cbind/include
 LOC_EXOII_INC = -I../../cbind/include -I../../forbind/include
 
-NETCDF_INC = -I/usr/local/eng_sci/struct/x86_64/current64-gcc/inc
+NETCDF_INC = -I/Users/gdsjaar/src/SEACAS.git/include
 
-NETCDF_LIB_DIR = /usr/local/eng_sci/struct/x86_64/current64-gcc/lib
+NETCDF_LIB_DIR = /Users/gdsjaar/src/SEACAS.git/lib
 NETCDF_LIB = -L$(NETCDF_LIB_DIR) -lnetcdf
 
 
