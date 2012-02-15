@@ -4,8 +4,6 @@
 *.dylib
 *.o
 *.exo
-*_jack.c
-*_jack32.c
 testcp
 testcp_ln
 testcp_nl
