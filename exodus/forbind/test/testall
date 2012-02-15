@@ -39,9 +39,9 @@
 #set PREFIX = "valgrind --tool=memcheck"
 set PREFIX = ""
 set SUFFIX = ""
-set BINDIR = /Users/gdsjaar/src/exodusii-sf/exodus/forbind/test
-set SRCDIR = /Users/gdsjaar/src/exodusii-sf/exodus/forbind/test
-set NCDUMP = /Users/gdsjaar/src/SEACAS.git/bin/ncdump
+set BINDIR = "."
+set SRCDIR = "."
+set NCDUMP = "ncdump"
 
 # testwt - single precision write test
 echo "************************************************************************"
