@@ -53,16 +53,15 @@ SET( cbind_OLDTESTS
   testrd_nc
   testwt-zeroe
   testwt-zeron
-  testrdv
   testwt-one-attrib
   testwt-partial
-  testrd-partial
   testrd-nsided
   testwt-nsided
   testrd-nfaced
   testwt-nfaced
   create_mesh
   rd_wt_mesh
+  test_nemesis
   testwt-long-name
   testrd-long-name)
 
