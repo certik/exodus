@@ -41,7 +41,7 @@ set PREFIX = ""
 set SUFFIX = ".exe"
 set BINDIR = @CMAKE_CURRENT_BINARY_DIR@
 set SRCDIR = @CMAKE_CURRENT_SOURCE_DIR@
-set NCDUMP = @NETCDF_NCDUMP@
+set NCDUMP = @SEACASExodus_Netcdf_EXECUTABLE_NCDUMP@
 
 # testwt - single precision write test
 echo "************************************************************************"
@@ -119,6 +119,10 @@ ${NCDUMP} -d5,5 test-nsided.exo | grep -v version | diff - ${SRCDIR}/test-nsided
 # testrd_nsid - single precision read test
 echo "testrd_nsid ..."
 ${PREFIX} ${BINDIR}/f_testrd_nsid${SUFFIX} | grep -v version | diff - ${SRCDIR}/testrd_nsid.dmp | tee testrd_nsid.res
+
+# test_nem - nemesis routines
+echo "test_nem ..."
+${PREFIX} ${BINDIR}/f_test_nem
 
 echo "************************************************************************"
 echo "************************************************************************"

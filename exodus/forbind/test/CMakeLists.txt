@@ -1,12 +1,13 @@
-INCLUDE(PackageAddExecutable)
-INCLUDE(PackageAddTest)
-INCLUDE(PackageAddAdvancedTest)
+INCLUDE(TribitsAddExecutable)
+INCLUDE(TribitsAddTest)
+INCLUDE(TribitsAddAdvancedTest)
 
 ADD_DEFINITIONS(-DUSING_CMAKE)
 
 find_program (${PACKAGE_NAME}_Netcdf_EXECUTABLE_NCDUMP
 	     NAME ncdump
 	     PATHS 
+                ${Netcdf_LIBRARY_DIRS}/../bin
 	        $ENV{ACCESS}/bin
 	        $ENV{NETCDF_DIR}/bin
 	        $ENV{NETCDF_DIR}/ncdump
@@ -31,6 +32,7 @@ IF (${PACKAGE_NAME}_Netcdf_EXECUTABLE_NCDUMP)
     testcpln
     testwt_nsid
     testrd_nsid
+    test_nem
   )
 
   CONFIGURE_FILE(
@@ -45,10 +47,10 @@ IF (${PACKAGE_NAME}_Netcdf_EXECUTABLE_NCDUMP)
   #       when built with shareable libraries on some platforms....
 
   FOREACH ( testName ${forbind_OLDTESTS} )
-    PACKAGE_ADD_EXECUTABLE( f_${testName} NOEXEPREFIX LINKER_LANGUAGE Fortran SOURCES ${testName}.f DEPLIBS exodus_for)
+    TRIBITS_ADD_EXECUTABLE( f_${testName} NOEXEPREFIX LINKER_LANGUAGE Fortran SOURCES ${testName}.f DEPLIBS exodus_for)
   ENDFOREACH ( testName )
 
-  PACKAGE_ADD_ADVANCED_TEST(
+  TRIBITS_ADD_ADVANCED_TEST(
    exodus_unit_tests
    TEST_0 CMND /bin/csh ARGS ${CMAKE_CURRENT_BINARY_DIR}/testall
 	  OUTPUT_FILE exodus_unit_tests.out
