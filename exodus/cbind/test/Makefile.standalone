@@ -36,11 +36,10 @@ LOCALEXO = ../../libexodus.a
 LIBS = $(EXOIITEST) $(NETCDF_LIB) -lm
 
 PROGS = testwt testwtd testrd testrd1 testrdd testwt1 testwt2 testwtm \
-	testwt_ss testwt_nossnsdf testrd_ss testrdwt testcp testcpd testcp_nl  \
-	testcp_ln testwt_clb testwt_nc testrd_nc testwt-zeroe testwt-zeron \
-	testrdv testwt-one-attrib create_mesh rd_wt_mesh \
-	testrd-partial testwt-partial testwt-nsided testrd-nsided testwt-nfaced \
-	testrd-nfaced testwt-long-name testrd-long-name
+	testwt_ss testwt_nossnsdf testrd_ss testrdwt testcp testcpd \
+        testwt_clb testwt_nc testrd_nc testwt-zeroe testwt-zeron \
+	testrdv testwt-one-attrib create_mesh rd_wt_mesh testcef \
+        testref testwt-nsided testrd-nsided testwt-nfaced testrd-nfaced
 
 all:: check
 
@@ -89,12 +88,6 @@ testrdwt:   testrdwt.o   $(LOCALEXO)
 testcp:     testcp.o     $(LOCALEXO)
 	$(CC) $(CFLAGS) -o $@      testcp.o     $(LDFLAGS) $(LIBS) 
 
-testcp_nl:     testcp_nl.o     $(LOCALEXO)
-	$(CC) $(CFLAGS) -o $@      testcp_nl.o     $(LDFLAGS) $(LIBS) 
-
-testcp_ln:     testcp_ln.o     $(LOCALEXO)
-	$(CC) $(CFLAGS) -o $@      testcp_ln.o     $(LDFLAGS) $(LIBS) 
-
 testcpd:    testcpd.o    $(LOCALEXO)
 	$(CC) $(CFLAGS) -o $@     testcpd.o     $(LDFLAGS) $(LIBS) 
 
@@ -136,19 +129,6 @@ testcef:  CreateEdgeFace.c  $(LOCALEXO)
 
 testref:  ReadEdgeFace.c  $(LOCALEXO)
 	$(CC) $(CFLAGS) -DReadEdgeFace=main -o $@   ReadEdgeFace.c     $(LDFLAGS) $(LIBS) 
-
-testwt-long-name: testwt-long-name.o $(LOCALEXO)
-	$(CC) $(CFLAGS) -o $@   testwt-long-name.o     $(LDFLAGS) $(LIBS) 
-		  
-testrd-long-name: testrd-long-name.o $(LOCALEXO)
-	$(CC) $(CFLAGS) -o $@   testrd-long-name.o     $(LDFLAGS) $(LIBS) 
-		  
-testrd-partial:  testrd-partial.o  $(LOCALEXO)
-	$(CC) $(CFLAGS) -o $@   testrd-partial.o     $(LDFLAGS) $(LIBS) 
-
-testwt-partial:  testwt-partial.o  $(LOCALEXO)
-	$(CC) $(CFLAGS) -o $@   testwt-partial.o     $(LDFLAGS) $(LIBS) 
-
 
 test:  check
 check: $(PROGS)

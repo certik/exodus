@@ -37,7 +37,6 @@ LOCALEXO = ../../libexoIIv2for.a ../../libexodus.a
 LIBS = $(LOCALEXO) $(NETCDF_LIB)
 
 PROGS = testwt testwtd testrd testrd1 testrdd testwt1 testwt2 testwtm testcp
-PROGS = testwt testwtd testrd testrd1 testrdd testwt1 testwt2 testwtm testcp testcpnl testcpln testwt_nsid testrd_nsid
 
 all:: check
 
@@ -76,22 +75,6 @@ testwtm::    testwtm.o    $(LOCALEXO)
 all:: testcp
 testcp::     testcp.o     $(LOCALEXO)
 	$(FC) $(FFLAGS) -o $@ testcp.o   $(LDFLAGS) $(LIBS)
-
-all:: testcpnl
-testcpnl::     testcpnl.o     $(LOCALEXO)
-	$(FC) $(FFLAGS) -o $@ testcpnl.o   $(LDFLAGS) $(LIBS)
-
-all:: testcpln
-testcpln::     testcpln.o     $(LOCALEXO)
-	$(FC) $(FFLAGS) -o $@ testcpln.o   $(LDFLAGS) $(LIBS)
-
-all:: testwt_nsid
-testwt_nsid::     testwt_nsid.o     $(LOCALEXO)
-	$(FC) $(FFLAGS) -o $@ testwt_nsid.o $(LDFLAGS) $(LIBS)
-
-all:: testrd_nsid
-testrd_nsid::     testrd_nsid.o     $(LOCALEXO)
-	$(FC) $(FFLAGS) -o $@ testrd_nsid.o $(LDFLAGS) $(LIBS)
 
 test:  check
 check: $(PROGS)
