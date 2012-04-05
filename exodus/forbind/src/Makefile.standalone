@@ -55,9 +55,6 @@ libexoIIv2for32.a: exo_jack32.o
 	cp $@ ../../
 
 clean::
-	rm -f *.c
-
-clean::
 	rm -f *.CKP *.ln *.BAK *.bak *.o *.M *.mod core errs ,* *~ *.a .emacs_* tags TAGS make.log MakeOut   "#"*
 
 .SUFFIXES: .c .F .f

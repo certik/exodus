@@ -40,17 +40,19 @@ SRCSF = addrwrpn.F
 
 OBJS = ${SRCS:.c=.o} ${SRCSF:.F=.o}
 
-ne_jack.c: ne_jack.src fortc1.sed fortc2.sed common.m4 $(OS_TYPE).m4
-	   ./fortc -P $(BITS) -L . -O $(OS_TYPE) ne_jack.src > $@
-
 all:: libnemIf.a
 libnemIf.a: $(OBJS)
 	$(AR) $@ $?
 	$(RANLIB) $@
-	cp libnemIf.a ..
+	cp libnemIf.a ../
 
-clean::
-	rm -f *.c addrwrpn.f
+ne_jack32.o: ne_jack.c
+	$(CC) -o ne_jack32.o -c $(CFLAGS) -DDEFAULT_REAL_INT ne_jack.c
+
+all:: libnemIf32.a
+libnemIf32.a: ne_jack32.o
+	$(AR) $@ $?
+	cp $@ ../
 
 clean::
 	rm -f *.CKP *.ln *.BAK *.bak *.o *.M *.mod core errs ,* *~ *.a .emacs_* tags TAGS make.log MakeOut   "#"*
