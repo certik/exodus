@@ -123,18 +123,23 @@ exoid = ex_create ("test.exo"       \comment{filename path}
 \endcode
 
 */
-#include "exodusII.h"
-#include "exodusII_int.h"
 #include <stdlib.h>
 #include <assert.h>
+#include <mpi.h>
+
+#include "netcdf_par.h"
+#include "exodusII.h"
+#include "exodusII_int.h"
 
 static int warning_output = 0;
 
-int ex_create_int (const char *path,
-		   int   cmode,
-		   int  *comp_ws,
-		   int  *io_ws,
-		   int   run_version)
+int ex_create_par_int (const char *path,
+		       int   cmode,
+		       int  *comp_ws,
+		       int  *io_ws,
+		       MPI_Comm comm,
+		       MPI_Info info,
+		       int   run_version)
 {
   int exoid, dims[1];
   int status;
@@ -152,6 +157,8 @@ int ex_create_int (const char *path,
 #endif /* NC_NETCDF4 */
    
   int int64_status;
+  int pariomode = NC_MPIPOSIX;
+
   unsigned int my_mode = cmode;
   assert(my_mode == cmode);
   exerrval = 0; /* clear error code */
@@ -211,6 +218,16 @@ int ex_create_int (const char *path,
   }
 #endif
 
+  /* Check parallel io mode.  Valid is NC_MPIPOSIX or NC_MPIIO or NC_PNETCDF
+   * Exodus uses different flag values; map to netcdf values
+   */
+  if (mode & EX_MPIPOSIX)
+    pariomode = NC_MPIPOSIX;
+  else if (mode & EX_MPIIO)
+    pariomode = NC_MPIIO;
+  else if (mode & EX_PNETCDF)
+    pariomode = NC_PNETCDF;
+
   /*
    * See if "large file" mode was specified in a ex_create my_mode. If
    * so, then pass the NC_64BIT_OFFSET flag down to netcdf.
@@ -257,7 +274,7 @@ int ex_create_int (const char *path,
     mode_name = "NOCLOBBER";
   }
 
-  if ((status = nc_create (path, mode, &exoid)) != NC_NOERR) {
+  if ((status = nc_create_par (path, mode|pariomode, comm, info, &exoid)) != NC_NOERR) {
     exerrval = status;
     if (my_mode & EX_NETCDF4) {
       sprintf(errmsg,

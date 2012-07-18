@@ -53,6 +53,9 @@
 *****************************************************************************/
 
 #include <stdio.h>
+#include <mpi.h>
+
+#include "netcdf_par.h"
 #include "exodusII.h"
 #include "exodusII_int.h"
 
@@ -116,12 +119,14 @@ exoid = ex_open ("test.exo",     \co{filename path}
 
 static int warning_output = 0;
 
-int ex_open_int (const char  *path,
-		 int    mode,
-		 int   *comp_ws,
-		 int   *io_ws,
-		 float *version,
-		 int    run_version)
+int ex_open_par_int (const char  *path,
+		     int    mode,
+		     int   *comp_ws,
+		     int   *io_ws,
+		     float *version,
+		     MPI_Comm comm,
+		     MPI_Info info,
+		     int    run_version)
 {
   int exoid;
   int status, stat_att, stat_dim;
@@ -131,6 +136,7 @@ int ex_open_int (const char  *path,
   int file_wordsize;
   int dim_str_name;
   int int64_status = 0;
+  int pariomode = NC_MPIPOSIX;
   
   char errmsg[MAX_ERR_LENGTH];
 
@@ -157,13 +163,20 @@ int ex_open_int (const char  *path,
     return (EX_FATAL);
   }
 
+  /* Check parallel io mode.  Valid is NC_MPIPOSIX or NC_MPIIO or NC_PNETCDF
+   * Exodus uses different flag values; map to netcdf values
+   */
+  if (mode & EX_MPIPOSIX)
+    pariomode = NC_MPIPOSIX;
+  else if (mode & EX_MPIIO)
+    pariomode = NC_MPIIO;
+  else if (mode & EX_PNETCDF)
+    pariomode = NC_PNETCDF;
+  
+  
   /* The EX_READ mode is the default if EX_WRITE is not specified... */
   if (!(mode & EX_WRITE)) { /* READ ONLY */
-#if defined(__LIBCATAMOUNT__)
-    if ((status = nc_open (path, NC_NOWRITE, &exoid)) != NC_NOERR)
-#else
-      if ((status = nc_open (path, NC_NOWRITE|NC_SHARE, &exoid)) != NC_NOERR)
-#endif
+      if ((status = nc_open_par (path, NC_NOWRITE|NC_SHARE|pariomode, comm, info, &exoid)) != NC_NOERR)
 	{
 	  /* NOTE: netCDF returns an id of -1 on an error - but no error code! */
 	  if (status == 0) {
@@ -207,11 +220,7 @@ int ex_open_int (const char  *path,
   }
   else /* (mode & EX_WRITE) READ/WRITE */
     {
-#if defined(__LIBCATAMOUNT__)
-      if ((status = nc_open (path, NC_WRITE, &exoid)) != NC_NOERR)
-#else
-	if ((status = nc_open (path, NC_WRITE|NC_SHARE, &exoid)) != NC_NOERR)
-#endif
+	if ((status = nc_open_par (path, NC_WRITE|NC_SHARE|pariomode, comm, info, &exoid)) != NC_NOERR)
 	  {
 	    /* NOTE: netCDF returns an id of -1 on an error - but no error code! */
 	    if (status == 0)

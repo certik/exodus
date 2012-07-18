@@ -48,22 +48,6 @@
 SYSTEM := $(shell uname)
 
 #========================================================================
-#       Darwin (Apple OSX)
-#========================================================================
-ifeq ($(SYSTEM),Darwin)
-BITS = 32
-RANLIB = ranlib
-OS_TYPE = darwin
-
-AR        = ar -crsv
-CC        = gcc
-FC        = gfortran
-CCOPTIONS  = 
-F77OPTIONS = 
-endif
-#========================================================================
-
-#========================================================================
 #       Linux
 #========================================================================
 ifeq ($(SYSTEM),Linux)
@@ -231,7 +215,7 @@ libnemIf.a:
 	cp forbind/libnemIf.a .
 
 check: test
-test:: ne_ctest_wrapper.c libnemesis.a 
+test:: ne_test.c libnemesis.a 
 	$(CC) -c $(CFLAGS) ne_test.c
 	$(CC) $(CFLAGS) -o ne_ctest ne_test.o libnemesis.a $(EXT_LIBS) -lm
 	./ne_ctest

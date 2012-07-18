@@ -31,35 +31,41 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # 
 
-INCLUDES = -I../../cbind/include
-F77EXTRAOPTIONS = -I../include
+AR = ar cr
+INCLUDES = -I../../cbind/include -I/Users/gdsjaar/src/SEACAS-SF-INSTALL/include
+F77EXTRAOPTIONS = -I../include 
+CFLAGS = -DADDC_
+CC = /opt/local/bin/clang-mp-3.1
+FC = /opt/local/bin/gfortran-mp-4.8
+RANLIB = true
 
-SRCS = exo_jack.c
-SRCSF = addrwrap.F
+SRCS =	    exo_jack.c 
 
-OBJS = ${SRCS:.c=.o} ${SRCSF:.F=.o}
+SRCSF = addrwrap.f
 
-all:: libexoIIv2for.a
-libexoIIv2for.a: $(OBJS)
+OBJS = ${SRCS:.c=.o} ${SRCSF:.f=.o}l
+
+all:: libexoIIv2for.a libexoIIv2for32.a
+
+libexoIIv2for.a: addrwrap.o exo_jack.o
 	$(AR) $@ $?
 	$(RANLIB) $@
-	$(_NULLCMD_)
-	$(CP) libexoIIv2for.a ../../
+	cp libexoIIv2for.a ../../
 
-exo_jack32.o: exo_jack.c
-	$(CC) -o exo_jack32.o -c $(CFLAGS) -DDEFAULT_REAL_INT exo_jack.c
-
-all:: libexoIIv2for32.a
 libexoIIv2for32.a: exo_jack32.o
 	$(AR) $@ $?
-	cp $@ ../../
+	$(RANLIB) $@
+	cp libexoIIv2for32.a ../../
 
+exo_jack32.o: exo_jack.c
+	$(CC) -o exo_jack32.o -c $(CFLAGS) $(INCLUDES) -DDEFAULT_REAL_INT exo_jack.c
+		
 clean::
 	rm -f *.CKP *.ln *.BAK *.bak *.o *.M *.mod core errs ,* *~ *.a .emacs_* tags TAGS make.log MakeOut   "#"*
 
 .SUFFIXES: .c .F .f
 .c.o:
-	$(CC) -c $(CFLAGS) $*.c
+	$(CC) $(INCLUDES) -c $(CFLAGS) $*.c
 .f.o:
 	$(FC) -c $(FFLAGS) $*.f
 .F.o:

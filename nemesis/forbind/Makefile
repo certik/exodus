@@ -2,7 +2,7 @@
 # $XConsortium: imake.c /main/90 1996/11/13 14:43:23 lehors $
 
 # ----------------------------------------------------------------------
-# Makefile generated from "Imake.tmpl" and </tmp/IIf.fyLOuv>
+# Makefile generated from "Imake.tmpl" and </tmp/IIf.hQ1HOM>
 # $XConsortium: Imake.tmpl /main/243 1996/11/13 14:42:56 lehors $
 #
 
@@ -68,11 +68,11 @@ all::
          IMAKESRC = $(CONFIGSRC)/imake
         DEPENDSRC = $(CONFIGSRC)/makedepend
 
-          INCROOT = /Users/gdsjaar/src/SEACAS/inc
-        USRLIBDIR = /Users/gdsjaar/src/SEACAS/lib
-         SHLIBDIR = /Users/gdsjaar/src/SEACAS/lib/shared
+          INCROOT = /Users/gdsjaar/src/SEACAS-SF-INSTALL/inc
+        USRLIBDIR = /Users/gdsjaar/src/SEACAS-SF-INSTALL/lib
+         SHLIBDIR = /Users/gdsjaar/src/SEACAS-SF-INSTALL/lib/shared
        LINTLIBDIR = $(USRLIBDIR)/lint
-          MANPATH = /Users/gdsjaar/src/SEACAS/man
+          MANPATH = /Users/gdsjaar/src/SEACAS-SF-INSTALL/man
     MANSOURCEPATH = $(MANPATH)/man
            MANDIR = $(MANSOURCEPATH)$(MANSUFFIX)
         LIBMANDIR = $(MANSOURCEPATH)$(LIBMANSUFFIX)
@@ -82,11 +82,11 @@ all::
           ARFLAGS = cru
   BOOTSTRAPCFLAGS =
                CC = /opt/local/bin/clang-mp-3.1
-               FC = /opt/local/bin/gfortran-mp-4.6
-             F90C = /opt/local/bin/gfortran-mp-5.6
+               FC = /opt/local/bin/gfortran-mp-4.8
+             F90C = /opt/local/bin/gfortran-mp-4.8
             CCPAR = /opt/local/bin/clang-mp-3.1
-            FCPAR = /opt/local/bin/gfortran-mp-4.6
-          F90CPAR = /opt/local/bin/gfortran-mp-5.6
+            FCPAR = /opt/local/bin/gfortran-mp-4.8
+          F90CPAR = /opt/local/bin/gfortran-mp-4.8
                AS = as
              TEST = /bin/test
               M2C = /bin/true
@@ -162,7 +162,7 @@ CXXEXTRA_INCLUDES =
      INSTDATFLAGS = -m 765 -o gdsjaar -g _developer
     INSTKMEMFLAGS = -m InstAccUid -o gdsjaar -g _developer
 
-      PROJECTROOT = /Users/gdsjaar/src/SEACAS
+      PROJECTROOT = /Users/gdsjaar/src/SEACAS-SF-INSTALL
 
      STD_INCLUDES =
   STD_CPP_DEFINES = -DBuild64 -DADDC_ $(PROJECT_DEFINES)
@@ -213,7 +213,7 @@ F90EXTRALDOPTIONS =
            CCLINK = $(CC)
 
          NATIVECC = /opt/local/bin/clang-mp-3.1
-        NATIVEF77 = /opt/local/bin/gfortran-mp-4.6
+        NATIVEF77 = /opt/local/bin/gfortran-mp-4.8
           CROSSCC = /opt/local/bin/clang-mp-3.1
   CROSSACCESSROOT = /Net/projects/seacas/janus/current
    CROSSACCESSSRC = $(CROSSACCESSROOT)/ACCESS
@@ -249,31 +249,26 @@ F90EXTRALDOPTIONS =
 # PROJECTRELEASE  : release number of ACCESS distribution
 # ACCESSSRC       : location of ACCESS source code
 # ACCESSDIR       : location of ACCESS installation directories
-# Set in site.def : "SNLA ACCESS", "1.0", /Users/gdsjaar/src/SEACAS, /Users/gdsjaar/src/SEACAS
+# Set in site.def : "SNLA ACCESS", "1.0", /Users/gdsjaar/src/SEACAS-SF, /Users/gdsjaar/src/SEACAS-SF-INSTALL
       PROJECTNAME = "SNLA ACCESS"
    PROJECTRELEASE = "1.0"
-        ACCESSSRC = /Users/gdsjaar/src/SEACAS/ACCESS
-        ACCESSDIR = /Users/gdsjaar/src/SEACAS
+        ACCESSSRC = /Users/gdsjaar/src/SEACAS-SF/ACCESS
+        ACCESSDIR = /Users/gdsjaar/src/SEACAS-SF-INSTALL
 
         TFLOPROOT = TflopAccessRoot
        CPLANTROOT = CplantAccessRoot
 
+# Used to specify location of hdf5 libraries for use with netcdf-4
+         HDF5ROOT = /Users/gdsjaar/src/SEACAS-SF
+
 # Source code for the ACCESS Darwin
-
         ITOOLSSRC = itools
-
       GRAPHICSSRC = graphics
           SVDISRC = svdi
-
      LIBRARIESSRC = libraries
         NETCDFSRC = netcdf
-
           HDF5SRC = hdf5
-
      SERIALMPISRC = serial_mpi
-
-        MATLABSRC = matlab
-
    APPLICATIONSRC = applications
        SCRIPTSSRC = scripts
         TESTPROBS = test
@@ -305,7 +300,6 @@ F90EXTRALDOPTIONS =
         TXTEXOSRC = txtexo
        TXTEXO2SRC = txtexo2
        EXO2VISSRC = exo2vis
-
      EXOMATLABSRC = exomatlab
         EXOMATSRC = exomat
        EXO2MATSRC = exo2mat
@@ -331,19 +325,17 @@ F90EXTRALDOPTIONS =
          SUPESSRC = supes
        SUPESDPSRC = supesdp
         SUPLIBSRC = suplib
-     MAPVARLIBSRC = mapvarlib
         LEGACYSRC = legacy
+     MAPVARLIBSRC = mapvarlib
         EXODUSSRC = exodus
-
            PLTSRC = plt
    VDI_DRIVERSSRC = vdi_drivers
-
           IOSSSRC = ioss
         ZOLTANSRC = zoltan
          CHACOSRC = chaco
        NEMESISSRC = nemesis
     APREPROLIBSRC = aprepro
-
+         XHELPSRC = xhelp
 # Library Subdirectories for svdi
            CGISRC = cgi
            CDRSRC = cdr
@@ -369,27 +361,7 @@ F90EXTRALDOPTIONS =
        NUMBERSSRC = numbers
       NUMBERS2SRC = numbers2
        EX_JOINSRC = ex_join
-
          SPIFFSRC = spiff
-
-# Analysis Subdirectories
-         JAC2DSRC = jac2d
-         JAC3DSRC = jac3d
-        JACQ3DSRC = jacq3d
-         JAS3DSRC = jas3d
-         LCLIBSRC = lclib
-      PRONTO2DSRC = pronto2d
-      PRONTO3DSRC = pronto3d
-    PRONTO3D94SRC = pronto3d-9.4
-        SANCHOSRC = sancho
-        SANTOSSRC = santos
-      SANTOS3DSRC = santos3d
-       MERLIN2SRC = merlin2
-        SUBWAYSRC = subway
-        COYOTESRC = coyote
-
-# GUI Subdirectories
-           RAPSRC = rap
 
 # ACCESS installation directories
            BINDIR = $(ACCESSDIR)/bin
@@ -424,11 +396,11 @@ F90EXTRALDOPTIONS =
             SUPES = -lsupes
           SUPESDP = -lsupesdp
            SUPLIB = -lsuplib
-        MAPVARLIB = -lmapvarlib
            LEGACY = -llegacy
+        MAPVARLIB = -lmapvarlib
               PLT = -lplt
            RPCLIB =
-   EXTRANETCDFLIB = -lhdf5_hl -lhdf5 -lm -lz
+   EXTRANETCDFLIB = -L$(HDF5ROOT)/lib -lhdf5_hl -lhdf5 -lm -lz
             LCLIB = -lLegacyContact
            NETCDF = -lnetcdf $(EXTRANETCDFLIB)
          EXOIIV2C = -lexodus
@@ -444,6 +416,7 @@ F90EXTRALDOPTIONS =
        NEMESISF32 = -lnemIf32
             CHACO = -lchaco
            ZOLTAN = -lzoltan
+ 	    MATIO = -lmatio -lz
 
 # Libraries and include path used for building parallel executables
          PARFLIBS = -lmpi
@@ -458,12 +431,8 @@ F90EXTRALDOPTIONS =
       X11INCLUDES = -I/usr/X11R6/include
               X11 = -L/usr/X11R6/lib -lX11
 
-# Matlab includes and libraries
-  MATLABLIBRARIES =
-   MATLABINCLUDES =
-
 # Definitions used for running parallel executables
-         PARALLEL = 0
+         PARALLEL = Parallel
         NUM_PROCS = 1
         PARRUNCMD = mpirun
             NPCMD = -np
@@ -471,13 +440,13 @@ F90EXTRALDOPTIONS =
 
 # Imake flag used in the parallel directories
 
-PARALLELIMAKEFLAG = -DPARALLEL
+PARALLELIMAKEFLAG = ParallelImakeFlag
 
      ICONFIGFILES = $(IRULESRC)/Imake.tmpl $(IRULESRC)/ACCESS.tmpl 			$(IRULESRC)/site.def $(IRULESRC)/$(MACROFILE) 			 $(EXTRA_ICONFIGFILES)
 
         CONFIGDIR = $(ACCESSDIR)/config
 
-    USRLIBDIRPATH = /Users/gdsjaar/src/SEACAS/lib
+    USRLIBDIRPATH = /Users/gdsjaar/src/SEACAS-SF-INSTALL/lib
         LDPRELIBS =
        LDPOSTLIBS =
      TOP_INCLUDES = -I$(INCROOT)

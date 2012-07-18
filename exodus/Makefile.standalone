@@ -75,7 +75,7 @@ endif
 
 ifeq ($(COMPILER),GNU)
 CC	= gcc
-FC      = gfortran
+FC      = g77
 CCOPTIONS  = -O2 -Wall 
 F77OPTIONS = -O2
 endif
@@ -94,7 +94,7 @@ AR        = CC -xar -o
 ifeq ($(COMPILER),GNU)
 BITS    = 32
 CC	= gcc
-FC      = gfortran
+FC      = g77
 CCOPTIONS = -Wall
 else
 BITS      = 32
@@ -183,24 +183,27 @@ OS_TYPE = darwin
 AR        = ar -crsv
 CC        = gcc
 FC        = gfortran
-CCOPTIONS  = 
-F77OPTIONS = 
+CCOPTIONS  = -DADDC_
+F77OPTIONS =
 endif
 #========================================================================
 
 OPTIMIZE_FLAG = -O2
 STD_DEFINES = -DVERBOSE
 
-CFLAGS = $(OPTIMIZE_FLAG) $(CCOPTIONS) $(STD_DEFINES) $(LOC_EXOII_INC) $(NETCDF_INC)
+
+CFLAGS = $(OPTIMIZE_FLAG) $(CCOPTIONS) $(STD_DEFINES) $(LOC_EXOII_INC) $(NETCDF_INC) $(NETCDF_YES_NO)
 FFLAGS = $(OPTIMIZE_FLAG) $(F77OPTIONS) $(LOC_EXOII_INC) $(F77PREC)
 
 # Use include files locates in exodusii/cbind/include
 LOC_EXOII_INC = -I../../cbind/include -I../../forbind/include
 
-NETCDF_INC = -I/Users/gdsjaar/src/SEACAS/include
+# Set to -DNOT_NETCDF4 if you netcdf is not compiled with netcdf-4 enabled
+NETCDF_YES_NO = -DNOT_NETCDF4
 
-NETCDF_LIB_DIR = /Users/gdsjaar/src/SEACAS/lib
-NETCDF_LIB = -L$(NETCDF_LIB_DIR) -lnetcdf
+NETCDF = /Users/gdsjaar/src/netcdf-4.2
+NETCDF_INC = -I$(NETCDF)/include
+NETCDF_LIB = -L$(NETCDF)/lib -lnetcdf
 
 
 SUBDIRS = cbind/src forbind/src cbind/test forbind/test

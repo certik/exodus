@@ -53,16 +53,17 @@
 *
 *****************************************************************************/
 
+#include <mpi.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "netcdf.h"
-#include "exodusII.h"
-/* #include "drmd.h" */
-
+#include "exodusII_par.h"
 
 int main (int argc, char **argv)
 {
+  MPI_Comm mpi_comm = MPI_COMM_WORLD;
+  MPI_Info mpi_info = MPI_INFO_NULL;
+  
   int exoid, num_dim, num_nodes, num_elem, num_elem_blk, num_node_sets;
   int num_side_sets, error;
   int i, j, k, node_ctr;
@@ -89,8 +90,7 @@ int main (int argc, char **argv)
   int CPU_word_size,IO_word_size;
   int num_props, prop_value, *prop_values;
   int idum;
-  int max_name_length;
-  
+
   float time_value, *time_values, *var_values;
   float *x, *y, *z;
   float *attrib, *dist_fact;
@@ -110,18 +110,20 @@ int main (int argc, char **argv)
 
   ex_opts (EX_VERBOSE | EX_ABORT );
 
+  /* Initialize MPI. */
+  MPI_Init(&argc,&argv);
+
   /* open EXODUS II files */
-  exoid = ex_open ("test.exo",  /* filename path */
-                   EX_READ,             /* access mode = READ */
-                   &CPU_word_size,      /* CPU word size */
-                   &IO_word_size,       /* IO word size */
-                   &version);           /* ExodusII library version */
+  exoid = ex_open_par ("test.exo",      /* filename path */
+		       EX_READ,         /* access mode = READ */
+		       &CPU_word_size,  /* CPU word size */
+		       &IO_word_size,   /* IO word size */
+		       &version,        /* ExodusII library version */
+		       mpi_comm, mpi_info); 
 
   printf ("\nafter ex_open\n");
   if (exoid < 0) exit(1);
 
-
-				   
   printf ("test.exo is an EXODUSII file; version %4.2f\n",
           version);
   /*   printf ("         CPU word size %1d\n",CPU_word_size);  */
@@ -132,18 +134,10 @@ int main (int argc, char **argv)
   ex_inquire(exoid,EX_INQ_LIB_VERS, &idum, &version, cdum);
   printf ("EXODUSII Library API; version %4.2f (%d)\n", version, idum);
 
-  /* Query size of names used in this file */
-  {
-    int max_all_name_length = ex_inquire_int(exoid, EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH);
-    int max_use_name_length = ex_inquire_int(exoid, EX_INQ_DB_MAX_USED_NAME_LENGTH);
-    printf ("This file can use at most %d-character names\n", max_all_name_length);
-    printf ("The maximum name length used is %d-character names\n", max_use_name_length);
+  /* ncopts = NC_VERBOSE; */
 
-    max_name_length = max_use_name_length;
-    ex_set_max_name_length(exoid, max_name_length);
-  }
-  
   /* read database parameters */
+
   error = ex_get_init (exoid, title, &num_dim, &num_nodes, &num_elem,
                        &num_elem_blk, &num_node_sets, &num_side_sets);
 
@@ -160,7 +154,7 @@ int main (int argc, char **argv)
 
   /* Check that ex_inquire gives same title */
   error = ex_inquire (exoid, EX_INQ_TITLE, &idum, &fdum, title_chk);
-  printf ("after ex_inquire, error = %3d\n", error);
+  printf (" after ex_inquire, error = %d\n", error);
   if (strcmp(title, title_chk) != 0) {
     printf ("error in ex_inquire for EX_INQ_TITLE\n");
   }
@@ -168,7 +162,11 @@ int main (int argc, char **argv)
   /* read nodal coordinates values and names from database */
 
   x = (float *) calloc(num_nodes, sizeof(float));
-  y = (float *) calloc(num_nodes, sizeof(float));
+  if (num_dim >= 2)
+    y = (float *) calloc(num_nodes, sizeof(float));
+  else
+    y = 0;
+  
   if (num_dim >= 3)
     z = (float *) calloc(num_nodes, sizeof(float));
   else
@@ -183,12 +181,13 @@ int main (int argc, char **argv)
       printf ("%5.1f\n", x[i]);
     }
 
-  printf ("y coords = \n");
-  for (i=0; i<num_nodes; i++)
-    {
-      printf ("%5.1f\n", y[i]);
-    }
-
+  if (num_dim >= 2) {
+    printf ("y coords = \n");
+    for (i=0; i<num_nodes; i++)
+      {
+	printf ("%5.1f\n", y[i]);
+      }
+  }
   if (num_dim >= 3)
     {
       printf ("z coords = \n");
@@ -209,20 +208,22 @@ int main (int argc, char **argv)
     printf ("%f \n", y[0]);
   */
   free (x);
-  free (y);
+  if (num_dim >= 2)
+    free (y);
   if (num_dim >= 3)
     free (z);
 
 
   for (i=0; i<num_dim; i++)
     {
-      coord_names[i] = (char *) calloc ((max_name_length+1), sizeof(char));
+      coord_names[i] = (char *) calloc ((MAX_STR_LENGTH+1), sizeof(char));
     }
 
   error = ex_get_coord_names (exoid, coord_names);
   printf ("\nafter ex_get_coord_names, error = %3d\n", error);
   printf ("x coord name = '%s'\n", coord_names[0]);
-  printf ("y coord name = '%s'\n", coord_names[1]);
+  if (num_dim >1)
+    printf ("y coord name = '%s'\n", coord_names[1]);
   if (num_dim >2)
     printf ("z coord name = '%s'\n", coord_names[2]);
 
@@ -236,7 +237,7 @@ int main (int argc, char **argv)
     printf ("num nodal attributes = %d\n", num_attrs);
     if (num_attrs > 0) {
       for (j=0; j<num_attrs; j++) {
-	attrib_names[j] = (char *)calloc ((max_name_length+1), sizeof(char));
+	attrib_names[j] = (char *)calloc ((MAX_STR_LENGTH+1), sizeof(char));
       }
       error = ex_get_attr_names (exoid, EX_NODAL, 0, attrib_names);
       printf (" after ex_get_attr_names, error = %d\n", error);
@@ -283,7 +284,8 @@ int main (int argc, char **argv)
     printf ("\nafter ex_get_elem_blk_ids, error = %3d\n", error);
      
     for (i=0; i<num_elem_blk; i++) {
-      block_names[i] = (char *) calloc ((max_name_length+1), sizeof(char));
+      printf("Block # %d is id %d\n", i, ids[i]);
+      block_names[i] = (char *) calloc ((MAX_STR_LENGTH+1), sizeof(char));
     }
 
     error = ex_get_names(exoid, EX_ELEM_BLOCK, block_names);
@@ -298,7 +300,7 @@ int main (int argc, char **argv)
         error = ex_get_elem_block (exoid, ids[i], elem_type,
                                    &(num_elem_in_block[i]), 
                                    &(num_nodes_per_elem[i]), &(num_attr[i]));
-        printf ("\nafter ex_get_elem_block, error = %d\n", error);
+        printf ("\nafter ex_get_elem_block, id = %d, error = %d\n", ids[i], error);
          
         printf ("element block id = %2d\n",ids[i]);
         printf ("element type = '%s'\n", elem_type);
@@ -316,7 +318,7 @@ int main (int argc, char **argv)
      
     for (i=0; i<num_props; i++)
       {
-        prop_names[i] = (char *) calloc ((max_name_length+1), sizeof(char));
+        prop_names[i] = (char *) calloc ((MAX_STR_LENGTH+1), sizeof(char));
       }
      
     error = ex_get_prop_names(exoid,EX_ELEM_BLOCK,prop_names);
@@ -379,7 +381,7 @@ int main (int argc, char **argv)
     {
       if (num_elem_in_block[i] > 0) {
 	for (j=0; j<num_attr[i]; j++)
-	  attrib_names[j] = (char *) calloc ((max_name_length+1), sizeof(char));
+	  attrib_names[j] = (char *) calloc ((MAX_STR_LENGTH+1), sizeof(char));
 	
 	attrib = (float *) calloc(num_attr[i]*num_elem_in_block[i],sizeof(float));
 	error = ex_get_elem_attr (exoid, ids[i], attrib);
@@ -413,7 +415,7 @@ int main (int argc, char **argv)
     printf ("\nafter ex_get_node_set_ids, error = %3d\n", error);
 
     for (i=0; i<num_node_sets; i++) {
-      nset_names[i] = (char *) calloc ((max_name_length+1), sizeof(char));
+      nset_names[i] = (char *) calloc ((MAX_STR_LENGTH+1), sizeof(char));
     }
 
     error = ex_get_names(exoid, EX_NODE_SET, nset_names);
@@ -475,7 +477,7 @@ int main (int argc, char **argv)
 	  printf ("num nodeset attributes for nodeset %d = %d\n", ids[i], num_attrs);
 	  if (num_attrs > 0) {
 	    for (j=0; j<num_attrs; j++) {
-	      attrib_names[j] = (char *)calloc ((max_name_length+1), sizeof(char));
+	      attrib_names[j] = (char *)calloc ((MAX_STR_LENGTH+1), sizeof(char));
 	    }
 	    error = ex_get_attr_names (exoid, EX_NODE_SET, ids[i], attrib_names);
 	    printf (" after ex_get_attr_names, error = %d\n", error);
@@ -505,7 +507,7 @@ int main (int argc, char **argv)
 
     for (i=0; i<num_props; i++)
       {
-        prop_names[i] = (char *) calloc ((max_name_length+1), sizeof(char));
+        prop_names[i] = (char *) calloc ((MAX_STR_LENGTH+1), sizeof(char));
       }
     prop_values = (int *) calloc (num_node_sets, sizeof(int));
 
@@ -589,7 +591,7 @@ int main (int argc, char **argv)
     printf ("\nafter ex_get_side_set_ids, error = %3d\n", error);
     
     for (i=0; i<num_side_sets; i++) {
-      sset_names[i] = (char *) calloc ((max_name_length+1), sizeof(char));
+      sset_names[i] = (char *) calloc ((MAX_STR_LENGTH+1), sizeof(char));
     }
 
     error = ex_get_names(exoid, EX_SIDE_SET, sset_names);
@@ -684,7 +686,7 @@ int main (int argc, char **argv)
     
     for (i=0; i<num_props; i++)
       {
-        prop_names[i] = (char *) calloc ((max_name_length+1), sizeof(char));
+        prop_names[i] = (char *) calloc ((MAX_STR_LENGTH+1), sizeof(char));
       }
     
     error = ex_get_prop_names(exoid,EX_SIDE_SET,prop_names);
@@ -793,7 +795,7 @@ int main (int argc, char **argv)
     {
       for (j=0; j<4; j++)
         {
-          qa_record[i][j] = (char *) calloc ((max_name_length+1), sizeof(char));
+          qa_record[i][j] = (char *) calloc ((MAX_STR_LENGTH+1), sizeof(char));
         }
     }
 
@@ -837,7 +839,7 @@ int main (int argc, char **argv)
 
   for (i=0; i<num_glo_vars; i++)
     {
-      var_names[i] = (char *) calloc ((max_name_length+1), sizeof(char));
+      var_names[i] = (char *) calloc ((MAX_STR_LENGTH+1), sizeof(char));
     }
 
   error = ex_get_var_names (exoid, "g", num_glo_vars, var_names);
@@ -854,15 +856,15 @@ int main (int argc, char **argv)
   /* read nodal variables parameters and names */
   num_nod_vars = 0;
   if (num_nodes > 0) {
-    error = ex_get_variable_param (exoid, EX_NODAL, &num_nod_vars);
+    error = ex_get_var_param (exoid, "n", &num_nod_vars);
     printf ("\nafter ex_get_var_param, error = %3d\n", error);
 
     for (i=0; i<num_nod_vars; i++)
       {
-        var_names[i] = (char *) calloc ((max_name_length+1), sizeof(char));
+        var_names[i] = (char *) calloc ((MAX_STR_LENGTH+1), sizeof(char));
       }
 
-    error = ex_get_variable_names (exoid, EX_NODAL, num_nod_vars, var_names);
+    error = ex_get_var_names (exoid, "n", num_nod_vars, var_names);
     printf ("\nafter ex_get_var_names, error = %3d\n", error);
 
     printf ("There are %2d nodal variables; their names are :\n", num_nod_vars);
@@ -882,7 +884,7 @@ int main (int argc, char **argv)
      
     for (i=0; i<num_ele_vars; i++)
       {
-        var_names[i] = (char *) calloc ((max_name_length+1), sizeof(char));
+        var_names[i] = (char *) calloc ((MAX_STR_LENGTH+1), sizeof(char));
       }
      
     error = ex_get_var_names (exoid, "e", num_ele_vars, var_names);
@@ -925,7 +927,7 @@ int main (int argc, char **argv)
     if (num_nset_vars > 0) {
       for (i=0; i<num_nset_vars; i++)
 	{
-	  var_names[i] = (char *) calloc ((max_name_length+1), sizeof(char));
+	  var_names[i] = (char *) calloc ((MAX_STR_LENGTH+1), sizeof(char));
 	}
      
       error = ex_get_var_names (exoid, "m", num_nset_vars, var_names);
@@ -969,7 +971,7 @@ int main (int argc, char **argv)
     if (num_sset_vars > 0) {
       for (i=0; i<num_sset_vars; i++)
 	{
-	  var_names[i] = (char *) calloc ((max_name_length+1), sizeof(char));
+	  var_names[i] = (char *) calloc ((MAX_STR_LENGTH+1), sizeof(char));
 	}
      
       error = ex_get_var_names (exoid, "s", num_sset_vars, var_names);
@@ -1203,5 +1205,6 @@ int main (int argc, char **argv)
 
   error = ex_close (exoid);
   printf ("\nafter ex_close, error = %3d\n", error);
+  MPI_Finalize();
   return 0;
 }
