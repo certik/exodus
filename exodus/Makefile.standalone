@@ -38,7 +38,6 @@
 # FC == the Fortran compiler
 # CCOPTIONS == non-optimization related flags for C compiling on this platform
 # F77OPTIONS == non-optimization related flags for Fortran compiling on this platform
-# OS_TYPE == See listing in forbind/src/Imakefile
 # RANLIB == ranlib or 'true' if no ranlib
 # AR == command to build an archive library.
 #
@@ -50,7 +49,35 @@ SYSTEM := $(shell uname)
 # which require linking with hdf5.  It is assumed that the netcdf and hdf5
 # library and include paths are the same.
 
+#========================================================================
+#       Netcdf
+#========================================================================
 USING_NETCDF4 = "YES"
+
+NETCDF = /Users/gdsjaar/src/seacas-nopar
+NETCDF_INC = -I$(NETCDF)/include
+NETCDF_LIB = -L$(NETCDF)/lib -lnetcdf
+
+ifeq ($(USING_NETCDF4), "YES")
+LDFLAGS = -L$(NETCDF)/lib -lnetcdf -lhdf5_hl -lhdf5 -lm -lz
+else
+NETCDF_YES_NO = -DNOT_NETCDF4
+LDFLAGS = -L$(NETCDF)/lib -lnetcdf
+endif
+
+#========================================================================
+#       Darwin (Apple OSX)
+#========================================================================
+ifeq ($(SYSTEM),Darwin)
+RANLIB = ranlib
+
+AR        = ar -crsv
+CC        = gcc
+FC        = gfortran
+CCOPTIONS  = -DADDC_
+F77OPTIONS =
+endif
+#========================================================================
 
 #========================================================================
 #       Linux
@@ -61,7 +88,6 @@ ifeq ($(SYSTEM),Linux)
 COMPILER = GNU
 
 RANLIB = ranlib
-OS_TYPE = linux
 
 AR        = ar -rcv
 
@@ -92,7 +118,6 @@ endif
 #========================================================================
 ifeq ($(SYSTEM),SunOS)
 RANLIB = ranlib
-OS_TYPE = sunos
 
 AR        = CC -xar -o
 
@@ -113,7 +138,6 @@ endif
 #========================================================================
 ifeq ($(SYSTEM),IRIX64)
 RANLIB = true
-OS_TYPE = irix
 
 AR        = ar -rcv 
 CC        = cc
@@ -128,7 +152,6 @@ endif
 #========================================================================
 ifeq ($(SYSTEM),AIX)
 RANLIB = ranlib
-OS_TYPE = aix
 
 AR        = ar -rcv -X64
 CC        = xlc
@@ -146,7 +169,6 @@ endif
 #========================================================================
 ifeq ($(SYSTEM),TFLOP)
 RANLIB = ranlib
-OS_TYPE = osf
 
 AR        = xar -rcv 
 CC        = icc
@@ -162,7 +184,6 @@ endif
 #========================================================================
 ifeq ($(SYSTEM),OSF1)
 RANLIB = ranlib
-OS_TYPE = osf
 
 AR        = ar -crsv
 CC        = cc
@@ -171,20 +192,6 @@ CCOPTIONS  = -std
 endif
 #========================================================================
 
-#========================================================================
-#       Darwin (Apple OSX)
-#========================================================================
-ifeq ($(SYSTEM),Darwin)
-RANLIB = ranlib
-OS_TYPE = darwin
-
-AR        = ar -crsv
-CC        = gcc
-FC        = gfortran
-CCOPTIONS  = -DADDC_
-F77OPTIONS =
-endif
-#========================================================================
 
 OPTIMIZE_FLAG = -O2
 STD_DEFINES = -DVERBOSE
@@ -195,17 +202,6 @@ FFLAGS = $(OPTIMIZE_FLAG) $(F77OPTIONS) $(LOC_EXOII_INC) $(F77PREC)
 
 # Use include files locates in exodusii/cbind/include
 LOC_EXOII_INC = -I../../cbind/include -I../../forbind/include
-
-NETCDF = /Users/gdsjaar/src/seacas-nopar
-NETCDF_INC = -I$(NETCDF)/include
-NETCDF_LIB = -L$(NETCDF)/lib -lnetcdf
-
-ifeq ($(USING_NETCDF4), "YES")
-LDFLAGS = -L$(NETCDF)/lib -lnetcdf -lhdf5_hl -lhdf5 -lm -lz
-else
-NETCDF_YES_NO = -DNOT_NETCDF4
-LDFLAGS = -L$(NETCDF)/lib -lnetcdf
-endif
 
 
 
@@ -221,7 +217,7 @@ libexodus.a::
 
 libexoIIv2for.a::
 	echo "making exoIIv2for in forbind/src"
-	(cd forbind/src &&  $(MAKE) $(MFLAGS) -f Makefile.standalone "AR=$(AR)"  "CC=$(CC)" "CFLAGS=$(CFLAGS)" "FC=$(FC)" "FFLAGS=$(FFLAGS)" "RANLIB=$(RANLIB)" "SYSTEM=$(SYSTEM)" "OS_TYPE=$(OS_TYPE)" libexoIIv2for.a)
+	(cd forbind/src &&  $(MAKE) $(MFLAGS) -f Makefile.standalone "AR=$(AR)"  "CC=$(CC)" "CFLAGS=$(CFLAGS)" "FC=$(FC)" "FFLAGS=$(FFLAGS)" "RANLIB=$(RANLIB)" "SYSTEM=$(SYSTEM)" libexoIIv2for.a)
 	cp forbind/src/libexoIIv2for.a .
 	$(RANLIB) libexoIIv2for.a
 
