@@ -36,10 +36,15 @@
 # To run the tests with valgrind checking, uncomment the next line and comment the
 # following line. Can also define other prefixes if wanted.
 
+if ($#argv == 0) then
+  set NCDUMP = `which ncdump`
+else
+  set NCDUMP = $1
+endif
+
 #set PREFIX = "valgrind --tool=memcheck"
 set PREFIX = ""
 set SRCDIR = .
-set NCDUMP = /Users/gdsjaar/src/netcdf-4.2/bin/ncdump
 set DIFF = "diff -w"
 echo "************************************************************************"
 echo "************************************************************************"

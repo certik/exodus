@@ -31,11 +31,13 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # 
 
-LDFLAGS = -L/Users/gdsjaar/src/SEACAS-SF-INSTALL/lib -lnetcdf -lhdf5_hl -lhdf5 -lm -lz
-CFLAGS = -I../include -I/Users/gdsjaar/src/SEACAS-SF-INSTALL/include
+NETCDF = /Users/gdsjaar/src/seacas-nopar
+LDFLAGS = -L$(NETCDF)/lib -lnetcdf -lhdf5_hl -lhdf5 -lm -lz
+CFLAGS = -I../include -I$(NETCDF)/include
 EXOIITEST = -L../.. -lexodus
 LOCALEXO = ../../libexodus.a
 LIBS = $(EXOIITEST) $(NETCDF_LIB) -lm
+NCDUMP = $(NETCDF)/bin/ncdump
 
 PROGS = testwt testwtd testrd testrd1 testrdd testwt1 testwt2 testwtm \
 	testwt_ss testwt_nossnsdf testrd_ss testrdwt testcp testcpd \
@@ -153,7 +155,7 @@ testref:  ReadEdgeFace.c  $(LOCALEXO)
 
 test:  check
 check: $(PROGS)
-	csh ./testall.standalone
+	csh ./testall.standalone $(NCDUMP)
 
 clean::
 	rm -f  *.res $(PROGS)

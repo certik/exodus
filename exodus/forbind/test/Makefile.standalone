@@ -32,9 +32,13 @@
 # 
 
 
-NETCDF_LIB = -L/Users/gdsjaar/src/SEACAS-SF-INSTALL/lib -lnetcdf -lhdf5_hl -lhdf5 -lm -lz
+NETCDF = /Users/gdsjaar/src/seacas-nopar
+NETCDF_LIB = -L$(NETCDF)/lib -lnetcdf -lhdf5_hl -lhdf5 -lm -lz
+NCDUMP = $(NETCDF)/bin/ncdump
+
 # Use libexoIIv2for32.a if not using -fdefault-real-8 -fdefault-integer-8
 LOCALEXO = ../../libexoIIv2for.a ../../libexodus.a
+
 LIBS = $(LOCALEXO) $(NETCDF_LIB)
 FC = /opt/local/bin/gfortran-mp-4.8
 FFLAGS = -I../include  -O -fno-range-check -fcray-pointer
@@ -140,7 +144,7 @@ test_nem::   test_nem.o   $(LOCALEXO)
 
 test:  check
 check: $(PROGS)
-	csh ./testall.standalone
+	csh ./testall.standalone $(NCDUMP)
 
 clean::
 	rm -f *.res $(PROGS)

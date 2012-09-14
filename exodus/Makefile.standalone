@@ -34,7 +34,6 @@
 #========================================================================
 # A platform must define:
 #
-# BITS either 32 or 64 depending on a 32-bit or 64-bit build
 # CC == the C compiler
 # FC == the Fortran compiler
 # CCOPTIONS == non-optimization related flags for C compiling on this platform
@@ -47,6 +46,12 @@
 
 SYSTEM := $(shell uname)
 
+# Set this to yes if your netcdf is compiled with the netcdf4 extensions
+# which require linking with hdf5.  It is assumed that the netcdf and hdf5
+# library and include paths are the same.
+
+USING_NETCDF4 = "YES"
+
 #========================================================================
 #       Linux
 #========================================================================
@@ -55,7 +60,6 @@ ifeq ($(SYSTEM),Linux)
 # Default Compiler:
 COMPILER = GNU
 
-BITS = 32
 RANLIB = ranlib
 OS_TYPE = linux
 
@@ -70,12 +74,13 @@ endif
 
 ifeq ($(COMPILER),Intel)
 CC       = icc
+FC       = ifort
 CCOPTIONS  = -Xc 
 endif
 
 ifeq ($(COMPILER),GNU)
 CC	= gcc
-FC      = g77
+FC      = gfortran
 CCOPTIONS  = -O2 -Wall 
 F77OPTIONS = -O2
 endif
@@ -92,12 +97,10 @@ OS_TYPE = sunos
 AR        = CC -xar -o
 
 ifeq ($(COMPILER),GNU)
-BITS    = 32
 CC	= gcc
-FC      = g77
+FC      = gfortran
 CCOPTIONS = -Wall
 else
-BITS      = 32
 CC        = cc
 FC        = f77
 CCOPTIONS  = -xtarget=ultra2 -xarch=v9 -g -ftrap=common -Xc
@@ -109,7 +112,6 @@ endif
 #       SGI
 #========================================================================
 ifeq ($(SYSTEM),IRIX64)
-BITS = 64
 RANLIB = true
 OS_TYPE = irix
 
@@ -125,7 +127,6 @@ endif
 #       IBM
 #========================================================================
 ifeq ($(SYSTEM),AIX)
-BITS = 64
 RANLIB = ranlib
 OS_TYPE = aix
 
@@ -144,7 +145,6 @@ endif
 #       TFLOP
 #========================================================================
 ifeq ($(SYSTEM),TFLOP)
-BITS = 32
 RANLIB = ranlib
 OS_TYPE = osf
 
@@ -161,7 +161,6 @@ endif
 #       OSF (DEC Alpha)
 #========================================================================
 ifeq ($(SYSTEM),OSF1)
-BITS = 32
 RANLIB = ranlib
 OS_TYPE = osf
 
@@ -176,7 +175,6 @@ endif
 #       Darwin (Apple OSX)
 #========================================================================
 ifeq ($(SYSTEM),Darwin)
-BITS = 32
 RANLIB = ranlib
 OS_TYPE = darwin
 
@@ -198,17 +196,22 @@ FFLAGS = $(OPTIMIZE_FLAG) $(F77OPTIONS) $(LOC_EXOII_INC) $(F77PREC)
 # Use include files locates in exodusii/cbind/include
 LOC_EXOII_INC = -I../../cbind/include -I../../forbind/include
 
-# Set to -DNOT_NETCDF4 if you netcdf is not compiled with netcdf-4 enabled
-NETCDF_YES_NO = -DNOT_NETCDF4
-
-NETCDF = /Users/gdsjaar/src/netcdf-4.2
+NETCDF = /Users/gdsjaar/src/seacas-nopar
 NETCDF_INC = -I$(NETCDF)/include
 NETCDF_LIB = -L$(NETCDF)/lib -lnetcdf
+
+ifeq ($(USING_NETCDF4), "YES")
+LDFLAGS = -L$(NETCDF)/lib -lnetcdf -lhdf5_hl -lhdf5 -lm -lz
+else
+NETCDF_YES_NO = -DNOT_NETCDF4
+LDFLAGS = -L$(NETCDF)/lib -lnetcdf
+endif
+
 
 
 SUBDIRS = cbind/src forbind/src cbind/test forbind/test
 
-all:: libexodus.a libexoIIv2for.a
+all:: libexodus.a libexoIIv2for.a 
 
 libexodus.a::
 	echo "making exodus in cbind/src"
@@ -218,20 +221,20 @@ libexodus.a::
 
 libexoIIv2for.a::
 	echo "making exoIIv2for in forbind/src"
-	(cd forbind/src &&  $(MAKE) $(MFLAGS) -f Makefile.standalone "BITS=$(BITS)" "AR=$(AR)"  "CC=$(CC)" "CFLAGS=$(CFLAGS)" "FC=$(FC)" "FFLAGS=$(FFLAGS)" "RANLIB=$(RANLIB)" "SYSTEM=$(SYSTEM)" "OS_TYPE=$(OS_TYPE)" libexoIIv2for.a)
+	(cd forbind/src &&  $(MAKE) $(MFLAGS) -f Makefile.standalone "AR=$(AR)"  "CC=$(CC)" "CFLAGS=$(CFLAGS)" "FC=$(FC)" "FFLAGS=$(FFLAGS)" "RANLIB=$(RANLIB)" "SYSTEM=$(SYSTEM)" "OS_TYPE=$(OS_TYPE)" libexoIIv2for.a)
 	cp forbind/src/libexoIIv2for.a .
 	$(RANLIB) libexoIIv2for.a
 
 check: test
-test:: libexodus.a libexoIIv2for.a
+test:: libexodus.a libexoIIv2for.a 
 
 test::
 	echo "making test in cbind/test"
-	(cd cbind/test &&  $(MAKE) $(MFLAGS) -f Makefile.standalone "AR=$(AR)" "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LDFLAGS=$(LDFLAGS)" "RANLIB=$(RANLIB)" "NETCDF_LIB=$(NETCDF_LIB)" all)
+	(cd cbind/test &&  $(MAKE) $(MFLAGS) -f Makefile.standalone "AR=$(AR)" "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LDFLAGS=$(LDFLAGS)" "RANLIB=$(RANLIB)" all)
 
 test::
 	echo "making test in forbind/test"
-	(cd forbind/test &&  $(MAKE) $(MFLAGS) -f Makefile.standalone "BITS=$(BITS)" "AR=$(AR)"  "CC=$(CC)" "CFLAGS=$(CFLAGS)" "FC=$(FC)" "FFLAGS=$(FFLAGS)" "LDFLAGS=$(LDFLAGS)" "RANLIB=$(RANLIB)" "NETCDF_LIB=$(NETCDF_LIB)"  "SYSTEM=$(SYSTEM)" all)
+	(cd forbind/test &&  $(MAKE) $(MFLAGS) -f Makefile.standalone "AR=$(AR)"  "CC=$(CC)" "CFLAGS=$(CFLAGS)" "FC=$(FC)" "FFLAGS=$(FFLAGS)" "LDFLAGS=$(LDFLAGS)" "RANLIB=$(RANLIB)" all)
 
 clean::
 	@for flag in $(MAKEFLAGS) ''; do \
