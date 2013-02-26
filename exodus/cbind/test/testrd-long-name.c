@@ -99,11 +99,11 @@ int main (int argc, char **argv)
   char *coord_names[3], *qa_record[2][4], *info[3], *var_names[3];
   char *block_names[10], *nset_names[10], *sset_names[10];
   char *attrib_names[10];
-  char name[MAX_STR_LENGTH+1];
   char title[MAX_LINE_LENGTH+1], elem_type[MAX_STR_LENGTH+1];
   char title_chk[MAX_LINE_LENGTH+1];
   char *cdum = 0;
   char *prop_names[3];
+  char *name = NULL;
 
   CPU_word_size = 0;                    /* sizeof(float) */
   IO_word_size = 0;                     /* use what is stored in file */
@@ -143,6 +143,8 @@ int main (int argc, char **argv)
     ex_set_max_name_length(exoid, max_name_length);
   }
   
+  name = (char*) calloc((max_name_length+1), sizeof(char));
+
   /* read database parameters */
   error = ex_get_init (exoid, title, &num_dim, &num_nodes, &num_elem,
                        &num_elem_blk, &num_node_sets, &num_side_sets);
@@ -289,26 +291,25 @@ int main (int argc, char **argv)
     error = ex_get_names(exoid, EX_ELEM_BLOCK, block_names);
     printf ("\nafter ex_get_names, error = %3d\n", error);
     
-    for (i=0; i<num_elem_blk; i++)
-      {
-	ex_get_name(exoid, EX_ELEM_BLOCK, ids[i], name);
-	if (strcmp(name, block_names[i]) != 0) {
-	  printf ("error in ex_get_name for block id %d\n", ids[i]);
-	}
-        error = ex_get_elem_block (exoid, ids[i], elem_type,
-                                   &(num_elem_in_block[i]), 
-                                   &(num_nodes_per_elem[i]), &(num_attr[i]));
-        printf ("\nafter ex_get_elem_block, error = %d\n", error);
-         
-        printf ("element block id = %2d\n",ids[i]);
-        printf ("element type = '%s'\n", elem_type);
-        printf ("num_elem_in_block = %2d\n",num_elem_in_block[i]);
-        printf ("num_nodes_per_elem = %2d\n",num_nodes_per_elem[i]);
-        printf ("num_attr = %2d\n",num_attr[i]);
-        printf ("name = '%s'\n",block_names[i]);
-	free(block_names[i]);
+    for (i=0; i<num_elem_blk; i++) {
+      ex_get_name(exoid, EX_ELEM_BLOCK, ids[i], name);
+      if (strcmp(name, block_names[i]) != 0) {
+	printf ("error in ex_get_name for block id %d\n", ids[i]);
       }
-     
+      error = ex_get_elem_block (exoid, ids[i], elem_type,
+				 &(num_elem_in_block[i]), 
+				 &(num_nodes_per_elem[i]), &(num_attr[i]));
+      printf ("\nafter ex_get_elem_block, error = %d\n", error);
+      
+      printf ("element block id = %2d\n",ids[i]);
+      printf ("element type = '%s'\n", elem_type);
+      printf ("num_elem_in_block = %2d\n",num_elem_in_block[i]);
+      printf ("num_nodes_per_elem = %2d\n",num_nodes_per_elem[i]);
+      printf ("num_attr = %2d\n",num_attr[i]);
+      printf ("name = '%s'\n",block_names[i]);
+      free(block_names[i]);
+    }
+    
     /* read element block properties */
     error = ex_inquire (exoid, EX_INQ_EB_PROP, &num_props, &fdum, cdum);
     printf ("\nafter ex_inquire, error = %d\n", error);
@@ -1198,10 +1199,9 @@ int main (int argc, char **argv)
       }
     free(ids);
   }
+  free(name);
   if (num_node_sets > 0)
     free (num_nodes_per_set);
-
   error = ex_close (exoid);
   printf ("\nafter ex_close, error = %3d\n", error);
-  return 0;
 }
