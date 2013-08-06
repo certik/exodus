@@ -1,0 +1,20 @@
+EXTRA_ARGS=$@
+
+FC=/opt/local/bin/gfortran-mp-4.8
+
+ACCESS=/Users/gdsjaar/src/SEACAS
+
+rm -f CMakeCache.txt
+
+cmake  \
+-DCMAKE_Fortran_COMPILER:FILEPATH=${FC} \
+-DNETCDF_NCDUMP:PATH=${ACCESS}/bin/ncdump \
+-DNETCDF_INCLUDE_DIR:PATH=${ACCESS}/include \
+-DNETCDF_LIBRARY:PATH=${ACCESS}/lib/libnetcdf.a \
+-DHDF5HL_LIBRARY:PATH=${ACCESS}/lib/libhdf5_hl.a \
+-DHDF5_LIBRARY:PATH=${ACCESS}/lib/libhdf5.a \
+$EXTRA_ARGS
+
+
+
+
