@@ -38,10 +38,10 @@
 
 #set PREFIX = "valgrind --tool=memcheck"
 set PREFIX = ""
-set SUFFIX = ""
+set SUFFIX = ".exe"
 set BINDIR = @CMAKE_CURRENT_BINARY_DIR@
 set SRCDIR = @CMAKE_CURRENT_SOURCE_DIR@
-set NCDUMP = @NETCDF_NCDUMP@
+set NCDUMP = @SEACASExodus_Netcdf_EXECUTABLE_NCDUMP@
 
 # testwt - single precision write test
 echo "************************************************************************"
@@ -122,7 +122,7 @@ ${PREFIX} ${BINDIR}/f_testrd_nsid${SUFFIX} | grep -v version | diff - ${SRCDIR}/
 
 # test_nem - nemesis routines
 echo "test_nem ..."
-${PREFIX} ${BINDIR}/f_test_nem
+${PREFIX} ${BINDIR}/f_test_nem${SUFFIX} | diff -w - ${SRCDIR}/test_nem.dmp | tee test_nem.res
 
 echo "************************************************************************"
 echo "************************************************************************"
