@@ -42,6 +42,7 @@ find_library( HDF5HL_LIBRARY hdf5_hl
 
 INCLUDE_DIRECTORIES(
   "${CMAKE_CURRENT_SOURCE_DIR}/include"
+  "${CMAKE_CURRENT_SOURCE_DIR}/../cbind/include"
   "${CMAKE_CURRENT_BINARY_DIR}/include"
   "${NETCDF_INCLUDE_DIR}"
 )

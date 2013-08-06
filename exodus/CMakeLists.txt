@@ -47,4 +47,10 @@ find_library( HDF5HL_LIBRARY hdf5_hl
   /usr/local/hdf5/lib
   )
 
-
+# Check for ZLib, but only if using HDF5.
+FIND_PACKAGE(ZLIB)
+IF(NOT ZLIB_LIBRARY)
+   MESSAGE(FATAL_ERROR "HDF5 Support specified, cannot find ZLib.")
+ENDIF()
+SET(USE_ZLIB ON)
+INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIRS})
