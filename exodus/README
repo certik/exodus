@@ -32,19 +32,8 @@ top-level exodus directory, do 'accmkmf' followed by 'make
 Makefiles' and then 'make'
 
 2. CMAKE: type 'cmake .' or 'cmake -i' to generate the Makefiles
-followed by 'make'.  Cmake will search for the netcdf include file in
-the directories:
-	${ACCESS}/inc,
-	${NETCDF_DIR}/inc,
-	${NETCDF_DIR}/libsrc
-
-and the netcdf library in the directories:
-	${ACCESS}/lib, 
-	${NETCDF_DIR}/lib,
-	${NETCDF_DIR}/libsrc/.libs
-
-You should one of the environment variables ACCESS or NETCDF_DIR to
-point to the location of your netcdf installation.
+followed by 'make'.  There is a cmake-script file which shows how I configure 
+cmake.
 
 3. Makefile.standalone.  Edit the top-level Makefile.standalone file
 and specify the compiler and other options as detailed in the
@@ -63,22 +52,11 @@ NETCDF
 The exodus library uses the netcdf library for low-level data
 storage.
 
-Exodus requires NetCDF version 3.6.0 or later with the "large-model
-modifications".  NetCDF version 4.1 or later is highly recommended.
+Exodus requires NetCDF version 4.2.1.1 or later.
 
 The netcdf library must be modified slightly in order to handle the
 exodus datamodel. The specific changes are:
 
-PRE netcdf-4.1.2:
-1. libsrc/netcdf.h -- Modify the following defines:
-   libsrc4/netcdf_base.h (netcdf-4.X only)
-   libsrc4/netcdf.h      (netcdf-4.X only if it exists)
-
-#define NC_MAX_DIMS	65536	 /* max dimensions per file */
-#define NC_MAX_VARS	524288	 /* max variables per file */
-#define NC_MAX_VAR_DIMS	8        /* max per variable dimensions */
-
-netcdf-4.1.2 or later:
 1. include/netcdf.h -- Modify the following defines:
 
 #define NC_MAX_DIMS	65536	 /* max dimensions per file */
@@ -92,15 +70,12 @@ happens...
 
 2. I typically configure netcdf as follows:
 
-./configure --enable-netcdf-4 --disable-f77 --disable-f90 --disable-fsync --disable-dap --disable-cdmremote 
+./configure --enable-netcdf-4 --disable-fsync --disable-dap --disable-cdmremote 
 
 Replace "--enable-netcdf-4" with "--disable-netcdf-4" to not use the
 netcdf4 extensions. They are not necessarily needed for exodus, but
 will provide compression, larger model sizes, and may be faster in
 some cases.
-
-The --disable-f77 --disable-f90 are not needed for netcdf-4.2 or
-later.
 
 3. When running the netcdf tests, you may have to do "unlimit
 stacksize" (csh/tcsh) to avoid some failures due to the increased define sizes
