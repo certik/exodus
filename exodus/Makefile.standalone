@@ -54,9 +54,10 @@ SYSTEM := $(shell uname)
 #========================================================================
 USING_NETCDF4 = "YES"
 
-NETCDF = /Users/gdsjaar/src/seacas-nopar
+NETCDF = /Users/gdsjaar/src/SEACAS
 NETCDF_INC = -I$(NETCDF)/include
 NETCDF_LIB = -L$(NETCDF)/lib -lnetcdf
+NCDUMP = ${NETCDF}/bin/ncdump
 
 ifeq ($(USING_NETCDF4), "YES")
 LDFLAGS = -L$(NETCDF)/lib -lnetcdf -lhdf5_hl -lhdf5 -lm -lz
@@ -72,8 +73,8 @@ ifeq ($(SYSTEM),Darwin)
 RANLIB = ranlib
 
 AR        = ar -crsv
-CC        = gcc
-FC        = gfortran
+CC        = /opt/local/bin/gcc-mp-4.8
+FC        = /opt/local/bin/gfortran-mp-4.8
 CCOPTIONS  = -DADDC_
 F77OPTIONS =
 endif
@@ -226,11 +227,11 @@ test:: libexodus.a libexoIIv2for.a
 
 test::
 	echo "making test in cbind/test"
-	(cd cbind/test &&  $(MAKE) $(MFLAGS) -f Makefile.standalone "AR=$(AR)" "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LDFLAGS=$(LDFLAGS)" "RANLIB=$(RANLIB)" all)
+	(cd cbind/test &&  $(MAKE) $(MFLAGS) -f Makefile.standalone "AR=$(AR)" "CC=$(CC)" "CFLAGS=$(CFLAGS)" "LDFLAGS=$(LDFLAGS)" "RANLIB=$(RANLIB)" "NCDUMP=$(NCDUMP)" all)
 
 test::
 	echo "making test in forbind/test"
-	(cd forbind/test &&  $(MAKE) $(MFLAGS) -f Makefile.standalone "AR=$(AR)"  "CC=$(CC)" "CFLAGS=$(CFLAGS)" "FC=$(FC)" "FFLAGS=$(FFLAGS)" "LDFLAGS=$(LDFLAGS)" "RANLIB=$(RANLIB)" all)
+	(cd forbind/test &&  $(MAKE) $(MFLAGS) -f Makefile.standalone "AR=$(AR)"  "CC=$(CC)" "CFLAGS=$(CFLAGS)" "FC=$(FC)" "FFLAGS=$(FFLAGS)" "LDFLAGS=$(LDFLAGS)" "RANLIB=$(RANLIB)" "NCDUMP=$(NCDUMP)" all)
 
 clean::
 	@for flag in $(MAKEFLAGS) ''; do \
