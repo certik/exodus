@@ -1,0 +1,18 @@
+NOTE: All nemesis api functions are now included in the exodus library.
+      For almost all functions, the "ne_" portion of the function name
+      is replaced by "ex_".  For example, "ne_put_init_info" in the nemesis
+      API is now "ex_put_init_info" in the exodus API.  
+
+      The exceptions are:
+      * "ne_put_version" is "ex_put_nemesis_version"
+      * "ne_get_node_map" is "ex_get_processor_node_maps"
+      * "ne_put_node_map" is "ex_put_processor_node_maps"
+      * "ne_get_elem_map" is "ex_get_processor_elem_maps"
+      * "ne_put_elem_map" is "ex_put_processor_elem_maps"
+
+      The nemesis library can still be used, but all functions are 
+      simply implemented as wrappers that call the corresponding  
+      exodus API function.
+
+      Unless you are building a legacy code that uses the nemesis API,
+      it is best to just use the exodus API and library.
