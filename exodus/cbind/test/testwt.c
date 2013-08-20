@@ -279,8 +279,6 @@ int main (int argc, char **argv)
    ebids[5] = 15;
    ebids[6] = 16;
 
-   error = ex_put_name(exoid, EX_ELEM_BLOCK, ebids[0], block_names[0]);
-
    error = ex_put_elem_block (exoid, ebids[0], "quad", num_elem_in_block[0],
                               num_nodes_per_elem[0], 1);
    printf ("after ex_put_elem_block, error = %d\n", error);
