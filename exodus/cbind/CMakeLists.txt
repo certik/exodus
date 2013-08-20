@@ -1,7 +1,4 @@
 
-INCLUDE(CheckIncludeFile)
-CHECK_INCLUDE_FILE( malloc.h EX_HAVE_MALLOC_H )
-
 CONFIGURE_FILE(
   ${CMAKE_CURRENT_SOURCE_DIR}/include/exodusII_cfg.h.in
   ${CMAKE_CURRENT_BINARY_DIR}/include/exodusII_cfg.h
