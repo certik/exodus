@@ -51,7 +51,7 @@ SET(forbind_SRCS
    src/exo_jack.c
 )
 
-ADD_LIBRARY(exoIIv2for ${forbind_SRCS})
+ADD_LIBRARY(exoIIv2for ${EXODUS_LIBRARY_TYPE} ${forbind_SRCS})
 
 TARGET_LINK_LIBRARIES(exoIIv2for exoIIv2c ${NETCDF_LIBRARY} ${HDF5_LIBRARY} ${HDF5HL_LIBRARY})
 

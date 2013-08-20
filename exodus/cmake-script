@@ -7,6 +7,7 @@ ACCESS=/Users/gdsjaar/src/SEACAS
 rm -f CMakeCache.txt
 
 cmake  \
+-DBUILD_SHARED=ON \
 -DCMAKE_Fortran_COMPILER:FILEPATH=${FC} \
 -DNETCDF_NCDUMP:PATH=${ACCESS}/bin/ncdump \
 -DNETCDF_INCLUDE_DIR:PATH=${ACCESS}/include \
