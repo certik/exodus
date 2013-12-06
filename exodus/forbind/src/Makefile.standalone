@@ -38,10 +38,18 @@ SRCS =	    exo_jack.c
 
 SRCSF = addrwrap.F
 
-OBJS = ${SRCS:.c=.o} ${SRCSF:.F=.o}
+COBJS = ${SRCS:.c=.o}
+FOBJS = ${SRCSF:.F=.o}
+
 
 all:: libexoIIv2for.a
-libexoIIv2for.a: $(OBJS)
+libexoIIv2for.a: $(COBJS) $(FOBJS)
+	$(AR) $@ $?
+	$(RANLIB) $@
+	cp libexoIIv2for.a ../../
+
+all:: libexoIIv2for32.a
+libexoIIv2for32.a: $(COBJS)
 	$(AR) $@ $?
 	$(RANLIB) $@
 	cp libexoIIv2for.a ../../

@@ -65,13 +65,15 @@
 #define NC_FLOAT_WORDSIZE 4
 #define NC_DOUBLE_WORDSIZE 8
 
-static struct file_item* file_list = NULL;
+static struct ex_file_item* file_list = NULL;
 
-struct file_item* ex_find_file_item(int exoid)
+struct ex_file_item* ex_find_file_item(int exoid)
 {
-  struct file_item *ptr = file_list;
+  /* Find base filename in case exoid refers to a group */
+  int base_exoid = (unsigned)exoid & EX_FILE_ID_MASK;
+  struct ex_file_item *ptr = file_list;
   while (ptr) {						\
-    if( ptr->file_id == exoid ) break;				\
+    if( ptr->file_id == base_exoid ) break;				\
     ptr = ptr->next;						\
   }								\
   return ptr;
@@ -85,7 +87,7 @@ int ex_conv_ini( int  exoid,
 		 int  is_parallel)
 {
   char errmsg[MAX_ERR_LENGTH];
-  struct file_item* new_file;
+  struct ex_file_item* new_file;
   int filetype = 0;
   
   /*! ex_conv_ini() initializes the floating point conversion process.
@@ -182,7 +184,7 @@ int ex_conv_ini( int  exoid,
   
   nc_inq_format(exoid, &filetype);
      
-  new_file = malloc(sizeof(struct file_item));
+  new_file = malloc(sizeof(struct ex_file_item));
 
   new_file->file_id = exoid;
   new_file->user_compute_wordsize = *comp_wordsize == 4 ? 0 : 1;
@@ -221,8 +223,8 @@ void ex_conv_exit( int exoid )
    */
 
   char errmsg[MAX_ERR_LENGTH];
-  struct file_item* file = file_list;
-  struct file_item* prev = NULL;
+  struct ex_file_item* file = file_list;
+  struct ex_file_item* prev = NULL;
 
   exerrval = 0; /* clear error code */
   while( file ) {
@@ -258,7 +260,7 @@ nc_type nc_flt_code( int exoid )
    *
    * "exoid" is some integer which uniquely identifies the file of interest.
    */
-  struct file_item* file = ex_find_file_item(exoid);
+  struct ex_file_item* file = ex_find_file_item(exoid);
 
   exerrval = 0; /* clear error code */
 
@@ -290,7 +292,7 @@ int ex_int64_status(int exoid)
         EX_BULK_INT64_API    
         EX_ALL_INT64_API   (EX_MAPS_INT64_API|EX_IDS_INT64_API|EX_BULK_INT64_API)
   */
-  struct file_item* file = ex_find_file_item(exoid);
+  struct ex_file_item* file = ex_find_file_item(exoid);
 
   exerrval = 0; /* clear error code */
 
@@ -320,7 +322,7 @@ int ex_set_int64_status(int exoid, int mode)
   int api_mode = 0;
   int db_mode = 0;
 
-  struct file_item* file = ex_find_file_item(exoid);
+  struct ex_file_item* file = ex_find_file_item(exoid);
   
   exerrval = 0; /* clear error code */
 
@@ -342,7 +344,7 @@ int ex_set_int64_status(int exoid, int mode)
 
 int ex_set_option(int exoid, ex_option_type option, int option_value)
 {
-  struct file_item* file = ex_find_file_item(exoid);
+  struct ex_file_item* file = ex_find_file_item(exoid);
   if (!file ) {
     char errmsg[MAX_ERR_LENGTH];
     exerrval = EX_BADFILEID;
@@ -399,7 +401,7 @@ int ex_comp_ws( int exoid )
  * the conversion facility for this file id (exoid).
  * \param exoid  integer which uniquely identifies the file of interest.
 */
-  struct file_item* file = ex_find_file_item(exoid);
+  struct ex_file_item* file = ex_find_file_item(exoid);
 
     exerrval = 0; /* clear error code */
 
@@ -421,7 +423,7 @@ int ex_is_parallel(int exoid)
    * Note that in this case parallel assumes the output of a single file,
    * not a parallel run using file-per-processor.
    */
-  struct file_item* file = ex_find_file_item(exoid);
+  struct ex_file_item* file = ex_find_file_item(exoid);
 
   exerrval = 0; /* clear error code */
 

@@ -42,14 +42,16 @@
 #include <assert.h>
 #endif
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <unistd.h>
+#include <ctype.h>                      // for tolower, isspace
+#include <errno.h>                      // for errno
+#include <stddef.h>                     // for size_t
+#include <stdio.h>                      // for sprintf, NULL, fprintf, etc
+#include <stdlib.h>                     // for free, calloc, malloc, etc
+#include <string.h>                     // for strcpy, strlen
+#include <sys/types.h>                  // for int64_t, ssize_t
 
-#include "exodusII.h"
-#include "exodusII_int.h"
+#include "exodusII.h"                   // for exerrval, ex_err, etc
+#include "exodusII_int.h"               // for obj_stats, EX_FATAL, etc
 
 struct obj_stats*  exoII_eb = 0;
 struct obj_stats*  exoII_ed = 0;
@@ -149,8 +151,10 @@ void ex_update_max_name_length(int exoid, int length)
 {
   int status;
   int db_length = 0;
+  int rootid = exoid & EX_FILE_ID_MASK;
+
   /* Get current value of the maximum_name_length attribute... */
-  if ((status = nc_get_att_int(exoid, NC_GLOBAL, ATT_MAX_NAME_LENGTH, &db_length)) != NC_NOERR) {
+  if ((status = nc_get_att_int(rootid, NC_GLOBAL, ATT_MAX_NAME_LENGTH, &db_length)) != NC_NOERR) {
     char errmsg[MAX_ERR_LENGTH];
     exerrval = status;
     sprintf(errmsg,
@@ -161,8 +165,8 @@ void ex_update_max_name_length(int exoid, int length)
 
   if (length > db_length) {
     /* Update with new value... */
-    nc_put_att_int(exoid, NC_GLOBAL, ATT_MAX_NAME_LENGTH, NC_INT, 1, &length);
-    nc_sync(exoid);
+    nc_put_att_int(rootid, NC_GLOBAL, ATT_MAX_NAME_LENGTH, NC_INT, 1, &length);
+    nc_sync(rootid);
   }
 }
 
@@ -1516,7 +1520,7 @@ void ex_compress_variable(int exoid, int varid, int type)
 {
 #if !defined(NOT_NETCDF4)
 
-  struct file_item* file = ex_find_file_item(exoid);
+  struct ex_file_item* file = ex_find_file_item(exoid);
 
   if (!file ) {
     char errmsg[MAX_ERR_LENGTH];
@@ -1535,6 +1539,11 @@ void ex_compress_variable(int exoid, int varid, int type)
     if (deflate_level > 0 && (file->file_type == 2 || file->file_type == 3)) {
       nc_def_var_deflate(exoid, varid, shuffle, compress, deflate_level);
     }
+#if 0
+    if (type != 3) {
+      nc_var_par_access(exoid, varid, NC_COLLECTIVE);
+    }
+#endif
   }
 #endif
 }

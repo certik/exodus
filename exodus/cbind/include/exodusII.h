@@ -58,8 +58,8 @@
 #endif
 
 /* EXODUS II version number */
-#define EX_API_VERS 5.26f
-#define EX_API_VERS_NODOT 526
+#define EX_API_VERS 6.02f
+#define EX_API_VERS_NODOT 602
 #define EX_VERS EX_API_VERS
 #define NEMESIS_API_VERSION		EX_API_VERS
 #define NEMESIS_API_VERSION_NODOT	EX_API_VERS_NODOT
@@ -176,7 +176,15 @@ extern "C" {
     EX_INQ_DB_MAX_ALLOWED_NAME_LENGTH  = 48,     /**< inquire size of MAX_NAME_LENGTH dimension on database */
     EX_INQ_DB_MAX_USED_NAME_LENGTH  = 49,     /**< inquire size of MAX_NAME_LENGTH dimension on database */
     EX_INQ_MAX_READ_NAME_LENGTH = 50,     /**< inquire client-specified max size of returned names */
+
     EX_INQ_DB_FLOAT_SIZE = 51,      /**< inquire size of floating-point values stored on database */
+    EX_INQ_NUM_CHILD_GROUPS= 52,     /**< inquire number of groups contained in this (exoid) group */
+    EX_INQ_GROUP_PARENT    = 53,     /**< inquire id of parent of this (exoid) group; returns exoid if at root */
+    EX_INQ_GROUP_ROOT      = 54,     /**< inquire id of root group "/" of this (exoid) group; returns exoid if at root */
+    EX_INQ_GROUP_NAME_LEN  = 55,     /**< inquire length of name of group exoid */
+    EX_INQ_GROUP_NAME      = 56,     /**< inquire name of group exoid. "/" returned for root group */
+    EX_INQ_FULL_GROUP_NAME_LEN = 57, /**< inquire length of full path name of this (exoid) group */
+    EX_INQ_FULL_GROUP_NAME = 58,     /**< inquire full "/"-separated path name of this (exoid) group */
     EX_INQ_INVALID         = -1};
 
   typedef enum ex_inquiry ex_inquiry;
@@ -229,7 +237,8 @@ extern "C" {
     EX_DEFAULT  = 0,
     EX_VERBOSE  = 1,  /**< verbose mode message flag   */
     EX_DEBUG    = 2,  /**< debug mode def             */
-    EX_ABORT    = 4   /**< abort mode flag def        */
+    EX_ABORT    = 4,   /**< abort mode flag def        */
+    EX_NULLVERBOSE = 8 /**< verbose mode for null entity detection warning */
   };
   typedef enum ex_options ex_options;
   
@@ -377,7 +386,12 @@ extern "C" {
 
   EXODUS_EXPORT int ex_create_int (const char *path, int cmode, int *comp_ws, int *io_ws, int my_version);
 
- 
+  EXODUS_EXPORT int ex_create_group (int parent_id, const char *group_name);
+
+  EXODUS_EXPORT int ex_get_group_id(int exoid, const char *group_name, int *group_id);
+
+  EXODUS_EXPORT int ex_get_group_ids(int exoid, int *num_children, int *child_ids);
+  
   EXODUS_EXPORT int ex_get_all_times (int   exoid,
 				      void *time_values);
 
@@ -719,7 +733,7 @@ extern "C" {
 
   EXODUS_EXPORT void ex_err(const char *module_name, const char *message, int err_num);
   EXODUS_EXPORT void ex_get_err(const char** msg, const char** func, int* errcode);
-  EXODUS_EXPORT void ex_opts(int options);
+  EXODUS_EXPORT int ex_opts(int options);
   EXODUS_EXPORT int ex_inquire(int exoid, int inquiry, void_int*, float*, char*);
   EXODUS_EXPORT int64_t ex_inquire_int(int exoid, int inquiry);
   EXODUS_EXPORT int ex_int64_status(int exoid);
@@ -1977,6 +1991,7 @@ ex_put_elem_cmap(int  exoid,	/* NetCDF/Exodus file ID */
 #define EX_BADPARAM      1005   /**< bad parameter passed                     */
 #define EX_MSG          -1000   /**< message print code - no error implied    */
 #define EX_PRTLASTMSG   -1001   /**< print last error message msg code        */
+#define EX_NOTROOTID    -1002   /**< file id is not the root id; it is a subgroup id */
 #define EX_NULLENTITY   -1006   /**< null entity found                        */
 /* @} */
 

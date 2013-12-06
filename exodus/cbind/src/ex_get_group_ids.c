@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Sandia Corporation. Under the terms of Contract
+ * Copyright (c) 2013 Sandia Corporation. Under the terms of Contract
  * DE-AC04-94AL85000 with Sandia Corporation, the U.S. Governement
  * retains certain rights in this software.
  * 
@@ -35,53 +35,36 @@
 
 #include "exodusII.h"
 #include "exodusII_int.h"
+#include <stdlib.h>
 
-/*! \cond INTERNAL */
-int ex_default_max_name_length = 32; /* For default compatibility with older clients */
-
-#if defined(VERBOSE)
-int exoptval = EX_VERBOSE;   /* loud mode: set EX_VERBOSE */
-#else
-#if defined (DEBUG)
-int exoptval = EX_VERBOSE | EX_DEBUG;/* debug mode: set EX_VERBOSE & EX_DEBUG */
-#else
-int exoptval = EX_DEFAULT;  /* set default global options value to NOT print error msgs*/
-#endif
-#endif
-/*! \endcond */
-
-/*!
-The function ex_opts() is used to set message reporting options.
-
-\return Returns previous value for the message reporting option.
-
-\param[in] options   Integer option value. Current options are shown in the table below.
-
-<table>
-<tr><td> \c EX_ABORT  </td><td> Causes fatal errors to force program 
-                                exit. (Default is false.) </td></tr>
-<tr><td> \c EX_DEBUG  </td><td> Causes certain messages to print 
-                                for debug use. (Default is false.)</td></tr>
-<tr><td> \c EX_VERBOSE</td><td> Causes all error messages to print when true, 
-                                otherwise no error messages will print. (Default is false.)</td></tr>
-</table>
-
-\note Values may be OR'ed together to provide any combination 
-      of these capabilities.
-
-For example, the following will cause all messages to print 
-and will cause the program to exit upon receipt of fatal error:
-
-\code
-#include "exodusII.h"
-ex_opts(EX_ABORT|EX_VERBOSE);
-\endcode
-
-*/
-int ex_opts (int options)      
+/**
+ * Given a file or group 'parent' id, return the number of child groups and the ids
+ * of the child groups below the parent.  If num_groups is NULL, do not return
+ * count; if group_ids is NULL, do not return ids.
+ */
+int ex_get_group_ids (int parent_id, int *num_groups, int *group_ids)
 {
-  int oldval = exoptval;
+  int status;
+  char errmsg[MAX_ERR_LENGTH];
+   
   exerrval = 0; /* clear error code */
-  exoptval = options;
-  return oldval;
+
+#if defined(NOT_NETCDF4)
+  exerrval = NC_ENOTNC4;
+  sprintf(errmsg,
+	  "Error: Group capabilities are not available in this netcdf version--not netcdf4");
+  ex_err("ex_get_group_ids",errmsg,exerrval);
+  return (EX_FATAL);
+#else
+  status = nc_inq_grps(parent_id, num_groups, group_ids);
+  if (status != NC_NOERR) {
+    exerrval = status;
+    sprintf(errmsg,
+	    "Error: Failed to get child group ids in file id %d",
+	    parent_id);
+    ex_err("ex_get_group_ids",errmsg,exerrval);
+    return (EX_FATAL);
+  }
+  return (EX_NOERR);
+#endif
 }

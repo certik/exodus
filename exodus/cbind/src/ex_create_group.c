@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Sandia Corporation. Under the terms of Contract
+ * Copyright (c) 2013 Sandia Corporation. Under the terms of Contract
  * DE-AC04-94AL85000 with Sandia Corporation, the U.S. Governement
  * retains certain rights in this software.
  * 
@@ -35,53 +35,48 @@
 
 #include "exodusII.h"
 #include "exodusII_int.h"
+#include <stdlib.h>
+#include <assert.h>
 
-/*! \cond INTERNAL */
-int ex_default_max_name_length = 32; /* For default compatibility with older clients */
-
-#if defined(VERBOSE)
-int exoptval = EX_VERBOSE;   /* loud mode: set EX_VERBOSE */
-#else
-#if defined (DEBUG)
-int exoptval = EX_VERBOSE | EX_DEBUG;/* debug mode: set EX_VERBOSE & EX_DEBUG */
-#else
-int exoptval = EX_DEFAULT;  /* set default global options value to NOT print error msgs*/
-#endif
-#endif
-/*! \endcond */
-
-/*!
-The function ex_opts() is used to set message reporting options.
-
-\return Returns previous value for the message reporting option.
-
-\param[in] options   Integer option value. Current options are shown in the table below.
-
-<table>
-<tr><td> \c EX_ABORT  </td><td> Causes fatal errors to force program 
-                                exit. (Default is false.) </td></tr>
-<tr><td> \c EX_DEBUG  </td><td> Causes certain messages to print 
-                                for debug use. (Default is false.)</td></tr>
-<tr><td> \c EX_VERBOSE</td><td> Causes all error messages to print when true, 
-                                otherwise no error messages will print. (Default is false.)</td></tr>
-</table>
-
-\note Values may be OR'ed together to provide any combination 
-      of these capabilities.
-
-For example, the following will cause all messages to print 
-and will cause the program to exit upon receipt of fatal error:
-
-\code
-#include "exodusII.h"
-ex_opts(EX_ABORT|EX_VERBOSE);
-\endcode
-
-*/
-int ex_opts (int options)      
+int ex_create_group (int parent_id, const char *group_name)
 {
-  int oldval = exoptval;
+  int exoid = -1;
+  int status;
+  char errmsg[MAX_ERR_LENGTH];
+   
   exerrval = 0; /* clear error code */
-  exoptval = options;
-  return oldval;
+
+#if defined(NOT_NETCDF4)
+  exerrval = NC_ENOTNC4;
+  sprintf(errmsg,
+	  "Error: Group capabilities are not available in this netcdf version--not netcdf4");
+  ex_err("ex_create_group",errmsg,exerrval);
+  return (EX_FATAL);
+#else
+  if ((status = nc_redef (parent_id)) != NC_NOERR) {
+    exerrval = status;
+    sprintf(errmsg,
+            "Error: failed to put file id %d into define mode", parent_id);
+    ex_err("ex_create_group",errmsg,exerrval);
+    return (EX_FATAL);
+  }
+  
+  if ((status = nc_def_grp (parent_id, group_name, &exoid)) != NC_NOERR) {
+    exerrval = status;
+    sprintf(errmsg,
+    "Error: group create failed for %s in file id %d",
+      group_name, parent_id);
+    ex_err("ex_create_group",errmsg,exerrval);
+    return (EX_FATAL);
+  }
+
+  if ((status = nc_enddef (parent_id)) != NC_NOERR) {
+    exerrval = status;
+    sprintf(errmsg,
+	    "Error: failed to complete definition for file id %d", exoid);
+    ex_err("ex_create",errmsg,exerrval);
+    return (EX_FATAL);
+  }
+#endif
+  return (exoid);
 }

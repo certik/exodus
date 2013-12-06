@@ -77,6 +77,7 @@ CC        = /opt/local/bin/gcc-mp-4.8
 FC        = /opt/local/bin/gfortran-mp-4.8
 CCOPTIONS  = -DADDC_
 F77OPTIONS =
+F77PREC    = -fdefault-real-8 -fdefault-integer-8 
 endif
 #========================================================================
 
@@ -95,103 +96,27 @@ AR        = ar -rcv
 ifeq ($(COMPILER),Portland)
 CC       = pgcc
 FC       = pgf77
-CCOPTIONS  = -Mframe
+CCOPTIONS  = -Mframe -DADDC_
 F77OPTIONS = -fast
+F77PREC    = -r8 -i8
 endif
 
 ifeq ($(COMPILER),Intel)
 CC       = icc
 FC       = ifort
-CCOPTIONS  = -Xc 
+CCOPTIONS  = -Xc -DADDC_
+F77PREC    = -r8 -i8
 endif
 
 ifeq ($(COMPILER),GNU)
 CC	= gcc
 FC      = gfortran
-CCOPTIONS  = -O2 -Wall 
+CCOPTIONS  = -O2 -Wall -DADDC_
 F77OPTIONS = -O2
+F77PREC    = -fdefault-real-8 -fdefault-integer-8 
 endif
 
 endif
-
-#========================================================================
-#       SUN
-#========================================================================
-ifeq ($(SYSTEM),SunOS)
-RANLIB = ranlib
-
-AR        = CC -xar -o
-
-ifeq ($(COMPILER),GNU)
-CC	= gcc
-FC      = gfortran
-CCOPTIONS = -Wall
-else
-CC        = cc
-FC        = f77
-CCOPTIONS  = -xtarget=ultra2 -xarch=v9 -g -ftrap=common -Xc
-F77OPTIONS = -xtarget=ultra2 -xarch=v9 -g -ftrap=common -errtags=INVOKE -C 
-endif
-endif
-
-#========================================================================
-#       SGI
-#========================================================================
-ifeq ($(SYSTEM),IRIX64)
-RANLIB = true
-
-AR        = ar -rcv 
-CC        = cc
-FC        = f77
-CCOPTIONS  = -64 -LANG:std 
-F77OPTIONS = -64
-F77PREC    =  -DBuild64 -r8 -i8
-endif
-
-#========================================================================
-#       IBM
-#========================================================================
-ifeq ($(SYSTEM),AIX)
-RANLIB = ranlib
-
-AR        = ar -rcv -X64
-CC        = xlc
-FC        = xlf
-CCOPTIONS  = -q64 -w 
-F77OPTIONS = -q64 -w 
-F77PREC = -WF,-DBuild64 -qintsize=8 -qrealsize=8
-LDFLAGS = -bmaxdata:0x06FFFFFFFFFFFFF8 -bmaxstack:0x10000000 
-endif
-
-#========================================================================
-
-#========================================================================
-#       TFLOP
-#========================================================================
-ifeq ($(SYSTEM),TFLOP)
-RANLIB = ranlib
-
-AR        = xar -rcv 
-CC        = icc
-FC        = if77
-CCOPTIONS  = -DPUMAGON -cougar
-F77OPTIONS = -cougar
-endif
-
-#========================================================================
-
-#========================================================================
-#       OSF (DEC Alpha)
-#========================================================================
-ifeq ($(SYSTEM),OSF1)
-RANLIB = ranlib
-
-AR        = ar -crsv
-CC        = cc
-FC        = f77
-CCOPTIONS  = -std
-endif
-#========================================================================
 
 
 OPTIMIZE_FLAG = -O2
@@ -199,7 +124,7 @@ STD_DEFINES = -DVERBOSE
 
 
 CFLAGS = $(OPTIMIZE_FLAG) $(CCOPTIONS) $(STD_DEFINES) $(LOC_EXOII_INC) $(NETCDF_INC) $(NETCDF_YES_NO)
-FFLAGS = $(OPTIMIZE_FLAG) $(F77OPTIONS) $(LOC_EXOII_INC) $(F77PREC)
+FFLAGS = $(OPTIMIZE_FLAG) $(F77OPTIONS) $(LOC_EXOII_INC)
 
 # Use include files locates in exodusii/cbind/include
 LOC_EXOII_INC = -I../../cbind/include -I../../forbind/include
@@ -208,7 +133,7 @@ LOC_EXOII_INC = -I../../cbind/include -I../../forbind/include
 
 SUBDIRS = cbind/src forbind/src cbind/test forbind/test
 
-all:: libexodus.a libexoIIv2for.a 
+all:: libexodus.a libexoIIv2for.a libexoIIv2for32.a
 
 libexodus.a::
 	echo "making exodus in cbind/src"
@@ -221,6 +146,12 @@ libexoIIv2for.a::
 	(cd forbind/src &&  $(MAKE) $(MFLAGS) -f Makefile.standalone "AR=$(AR)"  "CC=$(CC)" "CFLAGS=$(CFLAGS)" "FC=$(FC)" "FFLAGS=$(FFLAGS)" "RANLIB=$(RANLIB)" "SYSTEM=$(SYSTEM)" libexoIIv2for.a)
 	cp forbind/src/libexoIIv2for.a .
 	$(RANLIB) libexoIIv2for.a
+
+libexoIIv2for32.a::
+	echo "making exoIIv2for32 in forbind/src"
+	(cd forbind/src &&  $(MAKE) $(MFLAGS) -f Makefile.standalone "AR=$(AR)"  "CC=$(CC)" "CFLAGS=$(CFLAGS)" "FC=$(FC)" "FFLAGS=$(FFLAGS)" "RANLIB=$(RANLIB)" "SYSTEM=$(SYSTEM)" libexoIIv2for32.a)
+	cp forbind/src/libexoIIv2for32.a .
+	$(RANLIB) libexoIIv2for32.a
 
 check: test
 test:: libexodus.a libexoIIv2for.a 
