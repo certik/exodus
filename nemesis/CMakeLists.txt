@@ -30,6 +30,7 @@ find_program (NETCDF_NCDUMP ncdump
    )
 
 find_library( EXODUS_LIBRARY exodus
+  ../exodusii/cbind/
   $ENV{ACCESS}/lib/shared
   $ENV{ACCESS}/lib
   )

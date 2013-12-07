@@ -41,46 +41,46 @@ PROGS = testwt testwtd testrd testrd1 testrdd testwt1 testwt2 testwtm testcp tes
 all:: check
 
 testwt::     testwt.o     $(LOCALEXO)
-	$(FC) -o $@ $(FFLAGS)     testwt.o   $(LDFLAGS)   $(LIBS) 
+	$(FC) -o $@ $(FFLAGS)     testwt.o   $(LIBS) $(LDFLAGS) 
 
 testwtd::    testwtd.o    $(LOCALEXO)
-	$(FC) -o $@ $(FFLAGS)    testwtd.o   $(LDFLAGS)   $(LIBS) 
+	$(FC) -o $@ $(FFLAGS)    testwtd.o   $(LIBS) $(LDFLAGS) 
 
 testrd::     testrd.o     $(LOCALEXO)
-	$(FC) -o $@ $(FFLAGS)     testrd.o   $(LDFLAGS)   $(LIBS) 
+	$(FC) -o $@ $(FFLAGS)     testrd.o   $(LIBS) $(LDFLAGS) 
 
 testrd1::    testrd1.o    $(LOCALEXO)
-	$(FC) -o $@ $(FFLAGS)    testrd1.o   $(LDFLAGS)   $(LIBS) 
+	$(FC) -o $@ $(FFLAGS)    testrd1.o   $(LIBS) $(LDFLAGS) 
 
 testrdd::    testrdd.o    $(LOCALEXO)
-	$(FC) -o $@ $(FFLAGS)    testrdd.o   $(LDFLAGS)   $(LIBS) 
+	$(FC) -o $@ $(FFLAGS)    testrdd.o   $(LIBS) $(LDFLAGS) 
 
 testwt1::    testwt1.o    $(LOCALEXO)
-	$(FC) -o $@ $(FFLAGS)    testwt1.o   $(LDFLAGS)   $(LIBS) 
+	$(FC) -o $@ $(FFLAGS)    testwt1.o   $(LIBS) $(LDFLAGS) 
 
 testwt2::    testwt2.o    $(LOCALEXO)
-	$(FC) -o $@ $(FFLAGS)    testwt2.o   $(LDFLAGS)   $(LIBS) 
+	$(FC) -o $@ $(FFLAGS)    testwt2.o   $(LIBS) $(LDFLAGS) 
 
 testwtm::    testwtm.o    $(LOCALEXO)
-	$(FC) -o $@ $(FFLAGS)    testwtm.o   $(LDFLAGS)   $(LIBS) 
+	$(FC) -o $@ $(FFLAGS)    testwtm.o   $(LIBS) $(LDFLAGS) 
 
 testcp::     testcp.o     $(LOCALEXO)
-	$(FC) -o $@ $(FFLAGS)     testcp.o   $(LDFLAGS)   $(LIBS) 
+	$(FC) -o $@ $(FFLAGS)     testcp.o   $(LIBS) $(LDFLAGS) 
 
 testcpnl::   testcpnl.o   $(LOCALEXO)
-	$(FC) -o $@ $(FFLAGS)   testcpnl.o   $(LDFLAGS)   $(LIBS) 
+	$(FC) -o $@ $(FFLAGS)   testcpnl.o   $(LIBS) $(LDFLAGS) 
 
 testcpln::   testcpln.o   $(LOCALEXO)
-	$(FC) -o $@ $(FFLAGS)   testcpln.o   $(LDFLAGS)   $(LIBS) 
+	$(FC) -o $@ $(FFLAGS)   testcpln.o   $(LIBS) $(LDFLAGS) 
 
 testwt_nsid::  testwt_nsid.o   $(LOCALEXO)
-	$(FC) -o $@ $(FFLAGS)  testwt_nsid.o   $(LDFLAGS)   $(LIBS) 
+	$(FC) -o $@ $(FFLAGS)  testwt_nsid.o   $(LIBS) $(LDFLAGS) 
 
 testrd_nsid::  testrd_nsid.o   $(LOCALEXO)
-	$(FC) -o $@ $(FFLAGS)  testrd_nsid.o   $(LDFLAGS)   $(LIBS) 
+	$(FC) -o $@ $(FFLAGS)  testrd_nsid.o   $(LIBS) $(LDFLAGS) 
 
 test_nem::   test_nem.o   $(LOCALEXO)
-	$(FC) -o $@ $(FFLAGS)   test_nem.o   $(LDFLAGS)   $(LIBS) 
+	$(FC) -o $@ $(FFLAGS)   test_nem.o   $(LIBS) $(LDFLAGS) 
 
 test:  check
 check: $(PROGS)
