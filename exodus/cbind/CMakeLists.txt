@@ -262,6 +262,9 @@ SET(cbind_SRCS
 	src/ex_put_variable_param.c
 	src/ex_update.c
 	src/ex_utils.c
+	src/ex_get_block_params.c
+	src/ex_put_block_params.c
+	src/ex_add_attr.c
 )
 
 SET(cbind_HEADERS
