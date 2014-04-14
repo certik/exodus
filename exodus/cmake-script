@@ -2,18 +2,27 @@ EXTRA_ARGS=$@
 
 FC=/opt/local/bin/gfortran-mp-4.8
 
-ACCESS=/Users/gdsjaar/src/SEACAS
+# Root to where netcdf and hdf5 libraries and includes 
+# are installed. Libraries will be in LIB_ROOT/lib and 
+# includes will be in LIB_ROOT/include
+LIB_ROOT=/usr/local
+
+# Root of where to install the exodus libraries and
+# include files.  Library will be in INSTALL_ROOT/lib
+# and include file in INSTALL_ROOT/include
+INSTALL_ROOT=/usr/local
 
 rm -f CMakeCache.txt
 
 cmake  \
 -DBUILD_SHARED=ON \
+-DCMAKE_INSTALL_PREFIX:PATH=${INSTALL_ROOT} \
 -DCMAKE_Fortran_COMPILER:FILEPATH=${FC} \
--DNETCDF_NCDUMP:PATH=${ACCESS}/bin/ncdump \
--DNETCDF_INCLUDE_DIR:PATH=${ACCESS}/include \
--DNETCDF_LIBRARY:PATH=${ACCESS}/lib/libnetcdf.a \
--DHDF5HL_LIBRARY:PATH=${ACCESS}/lib/libhdf5_hl.a \
--DHDF5_LIBRARY:PATH=${ACCESS}/lib/libhdf5.a \
+-DNETCDF_NCDUMP:PATH=${LIB_ROOT}/bin/ncdump \
+-DNETCDF_INCLUDE_DIR:PATH=${LIB_ROOT}/include \
+-DNETCDF_LIBRARY:PATH=${LIB_ROOT}/lib/libnetcdf.a \
+-DHDF5HL_LIBRARY:PATH=${LIB_ROOT}/lib/libhdf5_hl.a \
+-DHDF5_LIBRARY:PATH=${LIB_ROOT}/lib/libhdf5.a \
 $EXTRA_ARGS
 
 
