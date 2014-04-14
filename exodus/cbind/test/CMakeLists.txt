@@ -17,7 +17,7 @@ CREATE_TEST_SOURCELIST( ExoIICTests
   )
 
 ADD_EXECUTABLE( ExoIICTests ${ExoIICTests} )
-TARGET_LINK_LIBRARIES( ExoIICTests exoIIv2c )
+TARGET_LINK_LIBRARIES( ExoIICTests exodus )
 
 SET( TestsToRun ${ExoIICTests} )
 REMOVE( TestsToRun ExoIICTests.cxx )
@@ -73,7 +73,7 @@ CONFIGURE_FILE(
 
 FOREACH ( testName ${cbind_OLDTESTS} )
   ADD_EXECUTABLE( ${testName} ${testName}.c )
-  TARGET_LINK_LIBRARIES( ${testName} exoIIv2c )
+  TARGET_LINK_LIBRARIES( ${testName} exodus )
 ENDFOREACH ( testName )
 
 #SET( EXECUTABLE_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR} )

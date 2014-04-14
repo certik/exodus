@@ -87,7 +87,7 @@ NamedTargetSubdirs(libexoIIv2for32.a,forbind/src,"making exoIIv2for32 ",PassDebu
 
 InstallLibrary(exodus,$(LIBDIR))
 InstallLibrary(exoIIv2for,$(LIBDIR))
-InstallLibraryAlias(exodus,exoIIv2c,$(LIBDIR))
+InstallLibraryAlias(exodus,exodus,$(LIBDIR))
 
 #if Build64BitAccess == YES
 InstallLibrary(exoIIv2for32,$(LIBDIR))

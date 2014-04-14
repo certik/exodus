@@ -82,7 +82,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
-# ADD LIB32 /nologo /out:"../../lib/nt/libexoIIv2c406.lib"
+# ADD LIB32 /nologo /out:"../../lib/nt/libexodus406.lib"
 
 !ELSEIF  "$(CFG)" == "exodusii - Win32 Debug"
 
@@ -105,7 +105,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
-# ADD LIB32 /nologo /out:"../../lib/nt/libexoIIv2c406_db.lib"
+# ADD LIB32 /nologo /out:"../../lib/nt/libexodus406_db.lib"
 
 !ENDIF 
 
