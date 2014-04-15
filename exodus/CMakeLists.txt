@@ -60,3 +60,10 @@ IF(NOT ZLIB_LIBRARY)
 ENDIF()
 SET(USE_ZLIB ON)
 INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIRS})
+
+# Check for curl. Only needed if using an installed netcdf built with curl.
+FIND_PACKAGE(CURL)
+IF(NOT CURL_LIBRARY)
+   MESSAGE(FATAL_ERROR "Could not find curl library. Might be needed for netcdf. If not, uncomment this block of code in CMakeLists.txt")
+ENDIF()
+SET(USE_CURL ON)
