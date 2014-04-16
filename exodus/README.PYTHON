@@ -6,17 +6,14 @@ The changes needed are:
 0. Build exodus as a shareable library:
    -- Make sure "-DBUILD_SHARED=ON" is set in cmake-script or given as
       an option to the cmake process
+   -- Make sure NETCDF_SO_ROOT points to the location of the netcdf 
+      shareable library.
+   -- Set "PYTHON_INSTALL" to the path where the exodus.py module should be
+      installed.
 
-1. cp exodus.py.in exodus.py
+1. Configure and make the exodus libraries:
+      sh cmake-script
+      make
+      make install
 
-2. Edit exodus.py
-   -- Change @ACCESSDIR@ to a path pointing to the location of your
-      exodus shareable or dynamic library. The library should be in
-      @ACCESSDIR@/lib and the exodus include file in @ACCESSDIR@/include
-   -- If the netcdf library is not in the same location, search for
-      "NETCDF_SO" and change it to point to the path to your netcdf
-      library.
-
-3. put exodus.py in a location accessible to your python.
-
-4. Documentation can be generated via "python -m pydoc -w exodus"
+2. Documentation can be generated via "python -m pydoc -w exodus"
