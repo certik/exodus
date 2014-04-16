@@ -64,7 +64,7 @@ def getAccessPath():
   """
   Return the base path of the exodus installation.
   """
-  accessPth = "@ACCESSDIR@"
+  accessPth = "@CMAKE_INSTALL_PREFIX@"
   if not os.path.isdir(accessPth):
     accessPth = os.environ.get('ACCESS')
     
@@ -85,10 +85,10 @@ def findLibExoPath():
 
 EXODUS_PATH = findLibExoPath()
 if os.uname()[0] == 'Darwin':
-  NETCDF_SO = EXODUS_PATH + "libnetcdf.dylib"
+  NETCDF_SO = "@NETCDF_SO_ROOT@" + "/libnetcdf.dylib"
   EXODUS_SO = EXODUS_PATH + "libexodus.dylib"
 else:
-  NETCDF_SO = EXODUS_PATH + "libnetcdf.so"
+  NETCDF_SO = "@NETCDF_SO_ROOT@" + "/libnetcdf.so"
   EXODUS_SO = EXODUS_PATH + "libexodus.so"
 NETCDF_LIB = cdll.LoadLibrary(NETCDF_SO)
 EXODUS_LIB = cdll.LoadLibrary(EXODUS_SO)

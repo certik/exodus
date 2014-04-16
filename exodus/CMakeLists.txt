@@ -66,3 +66,16 @@ FIND_PACKAGE(CURL)
 IF(CURL_FOUND)
    SET(CURL ${CURL_LIBRARY})
 ENDIF()
+
+
+find_program(PYTHON "python")
+
+if (PYTHON)
+  set(EXODUS_PY_IN "${CMAKE_CURRENT_SOURCE_DIR}/exodus.py.in")
+  set(EXODUS_PY "${CMAKE_CURRENT_BINARY_DIR}/exodus.py")
+
+  configure_file(${EXODUS_PY_IN} ${EXODUS_PY} @ONLY)
+
+  INSTALL(FILES ${EXODUS_PY} DESTINATION ${PYTHON_INSTALL})
+
+endif()

@@ -1,16 +1,20 @@
 EXTRA_ARGS=$@
 
+# Fortran compiler
 FC=/opt/local/bin/gfortran-mp-4.8
 
 # Root to where netcdf and hdf5 libraries and includes 
 # are installed. Libraries will be in LIB_ROOT/lib and 
 # includes will be in LIB_ROOT/include
-LIB_ROOT=/usr/local
+LIB_ROOT=/usr/local/lib
 
 # Root of where to install the exodus libraries and
 # include files.  Library will be in INSTALL_ROOT/lib
 # and include file in INSTALL_ROOT/include
-INSTALL_ROOT=/usr/local
+INSTALL_ROOT=/usr/local/lib
+
+# Complete path to where the exodus.py file should be installed
+PYTHON_INSTALL=${INSTALL_ROOT}/python
 
 rm -f CMakeCache.txt
 
@@ -19,10 +23,12 @@ cmake  \
 -DCMAKE_INSTALL_PREFIX:PATH=${INSTALL_ROOT} \
 -DCMAKE_Fortran_COMPILER:FILEPATH=${FC} \
 -DNETCDF_NCDUMP:PATH=${LIB_ROOT}/bin/ncdump \
+-DNETCDF_SO_ROOT:PATH=${LIB_ROOT}/lib/shared \
 -DNETCDF_INCLUDE_DIR:PATH=${LIB_ROOT}/include \
 -DNETCDF_LIBRARY:PATH=${LIB_ROOT}/lib/libnetcdf.a \
 -DHDF5HL_LIBRARY:PATH=${LIB_ROOT}/lib/libhdf5_hl.a \
 -DHDF5_LIBRARY:PATH=${LIB_ROOT}/lib/libhdf5.a \
+-DPYTHON_INSTALL:PATH=${PYTHON_INSTALL} \
 $EXTRA_ARGS
 
 
