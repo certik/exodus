@@ -452,7 +452,7 @@ F2C(exgqa,EXGQA) (int *idexo,
   /* do ExodusII C call to get qa records */
   if (ex_get_qa(*idexo, (void *) sptr) == EX_FATAL) {
     *ierr = EX_FATAL;
-    return;
+    goto error_ret;
   }
   iii = 0;                      /* offset counter */
   for (i = 0; i < num_qa_records; i++) {        /* string copy loop */
@@ -463,6 +463,7 @@ F2C(exgqa,EXGQA) (int *idexo,
     }
   }
 
+ error_ret:
   /* Free up the space we used */
   iii = 0;
   for (i = 0; i < num_qa_records; i++) {

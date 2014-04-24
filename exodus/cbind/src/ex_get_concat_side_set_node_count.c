@@ -622,7 +622,7 @@ int ex_get_concat_side_set_node_count(int exoid,
   safe_free(ss_elem_ndx);
   safe_free(side_set_elem_list);
   safe_free(side_set_side_list);
-
+  safe_free(elem_blk_parms);
   return(EX_NOERR);
 
  error_ret:
@@ -631,5 +631,6 @@ int ex_get_concat_side_set_node_count(int exoid,
   safe_free(ss_elem_ndx);
   safe_free(side_set_elem_list);
   safe_free(side_set_side_list);
+  safe_free(elem_blk_parms);
   return (EX_FATAL);
 }

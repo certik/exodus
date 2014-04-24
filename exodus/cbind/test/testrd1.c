@@ -451,10 +451,11 @@ int main (int argc, char **argv)
       error = ex_get_elem_attr (exoid, ids[i], attrib);
       printf ("\nafter ex_get_elem_attr, error = %d\n", error);
 
-      if (error == 0)
-         printf ("element block %d attributes:\n", ids[i]);
-         for (j=0; j<num_attr[i]*num_elem_in_block[i]; j++)
-           printf ("%6.4f\n", attrib[j]);
+      if (error == 0){
+	printf ("element block %d attributes:\n", ids[i]);
+	for (j=0; j<num_attr[i]*num_elem_in_block[i]; j++)
+	  printf ("%6.4f\n", attrib[j]);
+      }
       free (attrib);
    }
 
