@@ -1390,6 +1390,7 @@ F2C(exgp,EXGP) (int *idexo,
   /* allocate memory to stage the property name into */
   if (!(sptr = malloc((slen + 1) * sizeof(char)))) {
     *ierr = EX_MEMFAIL;
+    return;
   }
   /* Copy property name from Fortran string to staging area */
   ex_fstrncpy(sptr, prop_name, slen);
@@ -1424,6 +1425,7 @@ F2C(exgpa,EXGPA) (int *idexo,
   /* allocate memory to stage the property name into */
   if (!(sptr = malloc((slen + 1) * sizeof(char)))) {
     *ierr = EX_MEMFAIL;
+    return;
   }
   memset(sptr, 0, slen + 1);
 
@@ -1461,6 +1463,7 @@ F2C(exppa,EXPPA) (int *idexo,
   /* allocate memory to stage the property name into */
   if (!(sptr = malloc((slen + 1) * sizeof(char)))) {
     *ierr = EX_MEMFAIL;
+    return;
   }
   /* Copy property name from Fortran string to staging area */
   ex_fstrncpy(sptr, prop_name, slen);
@@ -2602,12 +2605,14 @@ F2C(exerr,EXERR) (char *pname,
   if (!(proc_name = malloc((pnamelen + 1) * sizeof(char)))) {
     ex_err("exerr", "Error: failed to allocate space for process name buffer",
            EX_MEMFAIL);
+    *errcode = EX_MEMFAIL;
     return;
   }
   if (!(error_string = malloc((err_stringlen + 1) * sizeof(char)))) {
     free(proc_name);
     ex_err("exerr", "Error: failed to allocate space for error msg buffer",
            EX_MEMFAIL);
+    *errcode = EX_MEMFAIL;
     return;
   }
   ex_fstrncpy(proc_name, pname, pnamelen);
