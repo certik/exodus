@@ -65,6 +65,12 @@
                       elem_blk_parms[i].elem_type,\
                       elem_blk_parms[i].num_nodes_per_elem);\
               ex_err("ex_get_side_set_node_count",errmsg,EX_MSG);\
+              safe_free(elem_blk_ids); \
+              safe_free(side_set_ids); \
+              safe_free(ss_elem_ndx); \
+              safe_free(side_set_elem_list); \
+              safe_free(side_set_side_list); \
+              safe_free(elem_blk_parms); \
               return(EX_FATAL);
 /*! \endcond */
 
