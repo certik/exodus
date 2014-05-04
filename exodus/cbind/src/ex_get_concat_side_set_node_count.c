@@ -92,7 +92,7 @@ int ex_get_concat_side_set_node_count(int exoid,
   int int_size, ids_size;
   int status;
   
-  struct elem_blk_parm  *elem_blk_parms;
+  struct elem_blk_parm  *elem_blk_parms = NULL;
 
   char errmsg[MAX_ERR_LENGTH];
 
