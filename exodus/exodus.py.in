@@ -16,10 +16,10 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 """
 
-EXODUS_PY_VERSION = "1.1 (beta)"
+EXODUS_PY_VERSION = "1.01 (beta)"
 
 EXODUS_PY_COPYRIGHT = """
-You are using exodus.py v 1.1 (beta), a python wrapper of some of the exodus II library.
+You are using exodus.py v 1.01 (beta), a python wrapper of some of the exodus II library.
 Copyright (c) 2013,2014 Sandia Corporation. Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government retains certain rights in this software.
 """
 
@@ -27,6 +27,7 @@ EXODUS_PY_CONTACTS = """
 Authors:  Timothy Shelton  (trshelt@sandia.gov)
           Michael Veilleux (mgveill@sandia.gov)
           David Littlewood (djlittl@sandia.gov)
+          Greg Sjaardema   (gdsjaar@sandia.gov) 
 """
 
 import sys
@@ -95,8 +96,12 @@ EXODUS_LIB = cdll.LoadLibrary(EXODUS_SO)
   
 EX_API_VERSION_NODOT = getExodusVersion()
 EX_VERBOSE           = 1       #verbose mode message flag 
+if (EX_API_VERSION_NODOT >= 608):
+  EX_READ              = 0x0002  # ex_open(): open file for reading (default)
+else:
+  EX_READ              = 0x0000  # ex_open(): open file for reading (default)
+  
 EX_WRITE             = 0x0001  # ex_open(): open existing file for appending.
-EX_READ              = 0x0002  # ex_open(): open file for reading (default)
 EX_NOCLOBBER         = 0x0004  # does not overwrite existing exodus file
 EX_CLOBBER           = 0x0008  # overwrites existing exodus file
 MAX_STR_LENGTH       = 32      # match exodus default
