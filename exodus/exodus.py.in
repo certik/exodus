@@ -1,6 +1,6 @@
 EXODUS_PY_COPYRIGHT_AND_LICENSE = """ 
 
-exodus.py v 1.0 (beta) is a python wrapper of some of the exodus II library
+exodus.py v 1.01 (beta) is a python wrapper of some of the exodus II library
 
 Copyright (c) 2013 Sandia Corporation. Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government retains certain rights in this software.
 

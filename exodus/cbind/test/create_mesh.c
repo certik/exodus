@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2005 Sandia Corporation. Under the terms of Contract
- * DE-AC04-94AL85000 with Sandia Corporation, the U.S. Governement
+ * DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government
  * retains certain rights in this software.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -42,7 +42,6 @@
 
 #include "exodusII.h"
 
-#define EBLK_ID 100000
 #define DEFAULT_FILE_NAME       "mesh"
 #define DEFAULT_MAP_ORIGIN      1
 #define DEFAULT_NUM_DOMAINS     1
@@ -54,6 +53,7 @@
 #define NUM_BYTES_PER_INT       4
 #define NUM_NODES_PER_ELEM      8
 
+#define EBLK_ID 100000
 #define EXODUSII_FILE_TYPE      ".e"
 
 typedef double realtyp;
@@ -369,7 +369,7 @@ void parse_input(
       printf( "                                                                \n" );
       printf( "DESCRIPTION                                                     \n" );
       printf( "                                                                \n" );
-      printf( "This program creates a 2-D mesh for performance benchmarking.   \n" );
+      printf( "This program creates a 3-D mesh for performance benchmarking.   \n" );
       printf( "The EXODUSII II database file(s) created by this       \n" );
       printf( "prrogram is/are read by the rd_wt_mesh program to perform the   \n" );
       printf( "actual benchmark.                                               \n" );
