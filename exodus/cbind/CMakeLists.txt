@@ -11,10 +11,12 @@ INCLUDE_DIRECTORIES(
 )
 
 SET(cbind_SRCS
+	src/ex_add_attr.c
 	src/ex_close.c
 	src/ex_conv.c
 	src/ex_copy.c
 	src/ex_create.c
+	src/ex_create_group.c
 	src/ex_cvt_nodes_to_sides.c
 	src/ex_err.c
 	src/ex_get_all_times.c
@@ -23,6 +25,7 @@ SET(cbind_SRCS
 	src/ex_get_attr_param.c
 	src/ex_get_block.c
 	src/ex_get_block_param.c
+	src/ex_get_block_params.c
 	src/ex_get_cmap_params.c
 	src/ex_get_concat_node_sets.c
 	src/ex_get_concat_sets.c
@@ -48,6 +51,8 @@ SET(cbind_SRCS
 	src/ex_get_entity_count_per_polyhedra.c
 	src/ex_get_glob_var_time.c
 	src/ex_get_glob_vars.c
+	src/ex_get_group_id.c
+	src/ex_get_group_ids.c
 	src/ex_get_id_map.c
 	src/ex_get_ids.c
 	src/ex_get_info.c
@@ -152,6 +157,7 @@ SET(cbind_SRCS
 	src/ex_put_attr_param.c
 	src/ex_put_block.c
 	src/ex_put_block_param.c
+	src/ex_put_block_params.c
 	src/ex_put_cmap_params.c
 	src/ex_put_cmap_params_cc.c
 	src/ex_put_concat_all_blocks.c
@@ -262,14 +268,12 @@ SET(cbind_SRCS
 	src/ex_put_variable_param.c
 	src/ex_update.c
 	src/ex_utils.c
-	src/ex_get_block_params.c
-	src/ex_put_block_params.c
-	src/ex_add_attr.c
 )
 
 SET(cbind_HEADERS
   include/exodusII.h
   include/exodusII_int.h
+  ${CMAKE_CURRENT_BINARY_DIR}/include/exodusII_cfg.h
 )
 
 IF(APPLE)
@@ -279,9 +283,13 @@ IF(APPLE)
     COMPILE_FLAGS -fno-common)
 ENDIF(APPLE)
 
-ADD_LIBRARY(exodus ${EXODUS_LIBRARY_TYPE} ${cbind_SRCS})
+ADD_LIBRARY(exodus ${cbind_SRCS})
 
-TARGET_LINK_LIBRARIES(exodus ${NETCDF_LIBRARY} ${HDF5_LIBRARY} ${HDF5HL_LIBRARY} ${ZLIB_LIBRARY} ${CURL} m dl)
+SET(required_libraries ${NETCDF_LIBRARY} ${HDF5HL_LIBRARY} ${HDF5_LIBRARY} ${ZLIB_LIBRARY} ${CURL})
+IF(NOT MSVC)
+  SET(required_libraries ${required_libraries} m dl)
+ENDIF(NOT MSVC)
+TARGET_LINK_LIBRARIES(exodus ${required_libraries})
 
 IF(MSVC)
   set_target_properties(exodus PROPERTIES COMPILE_DEFINITIONS _CRT_SECURE_NO_WARNINGS)

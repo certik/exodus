@@ -10,9 +10,9 @@
 # define WIN32
 #endif
 
-/* #undef EXODUSII_BUILD_SHARED_LIBS */
-#if defined(WIN32) && defined(EXODUSII_BUILD_SHARED_LIBS)
-#  if defined(exoIIc_EXPORTS)
+#define BUILD_SHARED_LIBS
+#if defined(WIN32) && defined(BUILD_SHARED_LIBS)
+#  if defined(exodus_EXPORTS)
 #    define EXODUS_EXPORT __declspec( dllexport ) extern
 #  else
 #    define EXODUS_EXPORT __declspec( dllimport ) extern
