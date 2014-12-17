@@ -79,7 +79,8 @@ int ex_get_partial_conn( int   exoid,
   int econnid = -1;
   int fconnid = -1;
 
-  int blk_id_ndx, status;
+  int blk_id_ndx;
+  int status = 0;
 
   int numnodperentdim = -1;
   int numedgperentdim = -1;
@@ -233,7 +234,6 @@ int ex_get_partial_conn( int   exoid,
       return(EX_FATAL);
     }
 
-  status = 0;
   if (edgeconn && (numedgperentdim > 0) &&
       ((status = nc_inq_varid (exoid, vedgeconn, &econnid)) != NC_NOERR))
     {

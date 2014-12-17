@@ -201,8 +201,6 @@ int ex_get_conn( int   exoid,
     }
   }
 
-
-  status = 0;
   if (nodeconn && (numnodperentdim >= 0) &&
       ((status = nc_inq_varid(exoid, vnodeconn, &connid)) != NC_NOERR))
     {
@@ -214,7 +212,6 @@ int ex_get_conn( int   exoid,
       return(EX_FATAL);
     }
 
-  status = 0;
   if (edgeconn && (numedgperentdim >= 0) &&
       ((status = nc_inq_varid (exoid, vedgeconn, &econnid)) != NC_NOERR))
     {
