@@ -234,6 +234,7 @@ int ex_get_partial_conn( int   exoid,
       return(EX_FATAL);
     }
 
+  status = 0;
   if (edgeconn && (numedgperentdim > 0) &&
       ((status = nc_inq_varid (exoid, vedgeconn, &econnid)) != NC_NOERR))
     {
